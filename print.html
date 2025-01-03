@@ -1,0 +1,915 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Starry Tutorial Book</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Starry Tutorial Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure-stars/Starry-Tutorial-Book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="从零开始运行-starry"><a class="header" href="#从零开始运行-starry">从零开始运行 Starry</a></h1>
+<p>本章我们将从零开始完成环境配置，并在 Starry 上开始运行包括 Hello World 在内的各种测例。整个流程分为以下几个部分：</p>
+<ul>
+<li><a href="ch01-01.html">实验环境配置</a></li>
+<li><a href="ch01-02.html">运行 Starry 的测例</a></li>
+<li><a href="ch01-03.html">为 Starry 添加新测例</a></li>
+</ul>
+<p>需要指明的是，本文档是对组件化内核开发的一个指导。由于 Starry 本身还在积极开发中，许多输出、依赖信息可能发生改变。截至最后一次修改，我们使用的仓库的版本信息为：</p>
+<ul>
+<li><a href="https://github.com/Azure-stars/arceos/commit/aabfe885362e2f183138c3ef643c13f0ab578725">arceos</a></li>
+<li><a href="https://github.com/Azure-stars/starry-next/commit/64dcf6ad964030f6b6c633b72406c51566179abf">starry-next</a></li>
+</ul>
+<p>如果无特殊说明，我们将使用上述版本信息作为参考。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="实验环境配置"><a class="header" href="#实验环境配置">实验环境配置</a></h1>
+<p>TODO，参考 CICD</p>
+<p>下面是初步的本地配置过程</p>
+<h2 id="实验环境"><a class="header" href="#实验环境">实验环境</a></h2>
+<ul>
+<li>操作系统：Ubuntu 24.04</li>
+</ul>
+<h2 id="下载项目"><a class="header" href="#下载项目">下载项目</a></h2>
+<pre><code class="language-bash">git clone git@github.com:Azure-stars/starry-next.git
+</code></pre>
+<h2 id="进入项目目录并切换到oscomp-branch"><a class="header" href="#进入项目目录并切换到oscomp-branch">进入项目目录并切换到<code>oscomp</code> branch</a></h2>
+<pre><code class="language-bash">cd starry-next
+git checkout oscomp
+</code></pre>
+<h2 id="配置rust开发环境"><a class="header" href="#配置rust开发环境">配置Rust开发环境</a></h2>
+<p>首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo，这里我们用官方的安装脚本来安装：</p>
+<p><code>curl https://sh.rustup.rs -sSf | sh</code></p>
+<p>如果通过官方的脚本下载失败了，可以在浏览器的地址栏中输入 <a href="https://sh.rustup.rs/">https://sh.rustup.rs</a> 来下载脚本，在本地运行即可。</p>
+<p>可通过如下命令安装 rustc 的 nightly 版本。</p>
+<pre><code class="language-bash">rustup install nightly
+</code></pre>
+<p>再次确认一下我们安装了正确的 rustc  版本：</p>
+<pre><code class="language-bash">$ rustc --version
+rustc 1.83.0 (90b35a623 2024-11-26)
+</code></pre>
+<p>安装各种相关的软件包，如target等:</p>
+<pre><code class="language-bash">rustup target add x86_64-unknown-linux-musl
+rustup target add aarch64-unknown-linux-musl
+rustup target add riscv64gc-unknown-linux-musl
+rustup target add x86_64-unknown-none  
+rustup target add riscv64gc-unknown-none-elf
+rustup target add aarch64-unknown-none
+rustup target add aarch64-unknown-none-softfloat
+rustup component add llvm-tools-preview
+cargo install cargo-binutils
+</code></pre>
+<h2 id="安装qemu"><a class="header" href="#安装qemu">安装QEMU</a></h2>
+<pre><code class="language-bash"># 安装与qemu相关的软件包
+sudo apt install libsdl2-2.0-0  libsdl2-dev  libfdt-dev libslirp-dev
+# 下载在ubuntu24.04中已经编译好的QEMU
+wget https://cloud.tsinghua.edu.cn/d/c516bf3fb89449749561/files/?p=%2Finstall-qemu-9.2.tar.bz2
+# 解压
+tar -Jxvf install-qemu-9.2.tar.bz2
+# 在~/.bashrc中配置环境变量
+# ....
+</code></pre>
+<h2 id="安装gcc-musl-cross"><a class="header" href="#安装gcc-musl-cross">安装gcc-musl-cross</a></h2>
+<pre><code class="language-bash"># 编译C语言测例需要
+sudo apt install libclang-dev
+wget https://cloud.tsinghua.edu.cn/d/c516bf3fb89449749561/files/?p=%2Faarch64-linux-musl-cross.tgz
+wget https://cloud.tsinghua.edu.cn/d/c516bf3fb89449749561/files/?p=%2Friscv64-linux-musl-cross.tgz
+wget https://cloud.tsinghua.edu.cn
+/d/c516bf3fb89449749561/files/?p=%2Fx86_64-linux-musl-cross.tgz
+# 解压这些文件
+tar -zxvf ...tgz 
+# 在~/.bashrc中配置环境变量
+# ....
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="运行-starry-的测例"><a class="header" href="#运行-starry-的测例">运行 Starry 的测例</a></h1>
+<p>本章我们将介绍如何在 Starry 上运行现有的测例，从而完成本地测试。</p>
+<h2 id="准备基座仓库"><a class="header" href="#准备基座仓库">准备基座仓库</a></h2>
+<p>Starry 本身是基于 <a href="https://github.com/arceos-org/arceos">ArceOS</a> 开发的，利用异构组件化内核的思想在 Unikernel 上层添加实现宏内核扩展。因此我们需要先 clone 基座仓库到本地。</p>
+<pre><code class="language-shell"># Clone the base repository
+./scripts/get_deps.sh
+</code></pre>
+<h2 id="运行指令"><a class="header" href="#运行指令">运行指令</a></h2>
+<p>我们先跑起来一个最简单的测试用例，并查看输出结果。</p>
+<h3 id="测试nimbos用户态测例"><a class="header" href="#测试nimbos用户态测例">测试nimbos用户态测例</a></h3>
+<p>我们借用 <a href="https://github.com/equation314/nimbos">nimbos内核</a> 所使用到的<a href="https://github.com/equation314/nimbos/tree/main/user">nimbos用户态测例</a> 为例。nimbos用户态测例由于重新编写了使用的依赖库，因此需要用到的 syscall 会较少，适合为初级形态的内核进行测试。
+环境变量 <code>AX_TESTCASE</code> 指定需要编译的测例，缺省情况下为 <code>nimbos</code>。</p>
+<p>运行指令为：</p>
+<pre><code class="language-shell"># Build nimbos user applications
+make user_apps ARCH=x86_64
+
+# Build kernel
+make ARCH=x86_64 LOG=off build
+
+# Run kernel
+make ARCH=x86_64 LOG=off run
+</code></pre>
+<p>期望输出为：</p>
+<pre><code class="language-shell">......
+smp = 1
+build_mode = release
+log_level = off
+
+Hello world from user mode program!
+Hello, world!
+Hello, I am process 2.
+Back in process 2, iteration 0.
+Back in process 2, iteration 1.
+Back in process 2, iteration 2.
+Back in process 2, iteration 3.
+Back in process 2, iteration 4.
+yield passed!
+into sleep test!
+simple_sleep passed!
+</code></pre>
+<h3 id="测试libcmusl用户态测例"><a class="header" href="#测试libcmusl用户态测例">测试libc(musl)用户态测例</a></h3>
+<p>目前 Starry 主线未支持从文件镜像中读取已经编译好的二进制测例，相关的测例存储在 <code>apps/</code> 目录下。目前可以看到测例目录包括 <code>nimbos</code> 和 <code>libc</code>，分别代表 nimbos 的测例和 libc(musl) 的测例。</p>
+<p>我们可以利用环境变量 <code>AX_TESTCASE</code> 指定需要编译的测例，例如：</p>
+<pre><code class="language-shell"># Build libc(musl) user applications
+make user_apps ARCH=x86_64 AX_TESTCASE=libc
+</code></pre>
+<p>即可编译 <code>libc</code> 测例为 x86_64 架构的二进制可执行文件。</p>
+<pre><code class="language-shell"># Build kernel
+make ARCH=x86_64 LOG=off AX_TESTCASE=libc build
+
+# Run kernel
+make ARCH=x86_64 LOG=off AX_TESTCASE=libc run
+</code></pre>
+<p>期望输出为：</p>
+<pre><code class="language-shell">......
+smp = 1
+build_mode = release
+log_level = off
+
+Hello, World!
+Sleeping for 5 seconds...
+Done!
+</code></pre>
+<h2 id="测例的打包封装与执行逻辑"><a class="header" href="#测例的打包封装与执行逻辑">测例的打包封装与执行逻辑</a></h2>
+<p><code>build.rs</code> 会读取<code>apps/nimbos/build</code>或<code>apps/libc/build</code>所有测例下的可执行文件，并按序排列之后形成 <code>link_app.S</code>。在 <code>src/loader.rs</code> 下我们调用 <code>global_asm</code> 语句将测例的二进制文件直接和内核打包封装在一起，从而让内核能够直接通过 <code>ramfs</code> 读取、运行测例。</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>global_asm!(include_str!(concat!(env!("OUT_DIR"), "/link_app.S")));
+<span class="boring">}</span></code></pre></pre>
+<p>这一步操作非常类似 rCore-Tutorial 的 <a href="https://rcore-os.cn/rCore-Tutorial-Book-v3/chapter3/1multi-loader.html">多道程序与分时多任务</a>，可以进行借鉴。</p>
+<p>之后在 <code>src/main.rs</code> 中我们会读取环境变量中指定的 <code>AX_TESTCASES_LIST</code> 变量(由 Makefile 生成)，从而了解目前要运行的所有测例内容，从而逐个读取测例完成测试。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="为-starry-添加新测例"><a class="header" href="#为-starry-添加新测例">为 Starry 添加新测例</a></h1>
+<h2 id="从已有二进制文件编译文件系统镜像"><a class="header" href="#从已有二进制文件编译文件系统镜像">从已有二进制文件编译文件系统镜像</a></h2>
+<p>目前 Starry 主线仅支持 fat32 文件系统，但我们之前做过 ext4 文件系统的<a href="https://github.com/Starry-OS/Starry-Old/blob/main/modules/axfs/src/fs/ext4_rs.rs">尝试</a>。因此我们同时介绍生成 fat32 和 ext4 文件系统镜像的方法。</p>
+<p>以下脚本来自于 <a href="https://github.com/Starry-OS/Starry-Old/blob/main/build_img.sh">build_img.sh</a></p>
+<pre><code class="language-shell">#!/bin/sh
+################################################################
+# 	MacOS  : brew install dosfstools
+# 	Ubuntu : apt-get install dosfstools
+#	Usage:
+# 		build_img.sh -a [arch] -fs [ext4|fat32] -file [testcase] -s [size]
+################################################################
+# default setting
+arch=x86_64
+fs=fat32
+size=30
+FILE=
+
+display_help()
+{
+	echo ""
+	echo "./build_img.sh -a [arch] -fs [filesystem] -file [testcase]"
+	# 若不指定参数，则使用默认的测例
+	echo "  -a | --arch		architecture: x86_64|riscv64|aarch64", default is x86_64
+	echo "  -fs | --filesystem	filesystem: ext4|fat32", default is fat32
+	echo "  -file | --testcase  directory of the binary testcases"
+	echo "  -s | --size		size of the disk image in 4MB batch size, default is set to 30, which means 120MB disk image"
+	echo "  -h | --help		display help"
+	echo ""
+	exit 1
+}
+
+# 可能接受四类参数 -a [arch] -fs [filesystem] -file [testcase] -s [size]
+# 但是不一定只有一个参数，所以使用 while 循环
+while [ "$1" != "" ]; do
+	case $1 in
+		-a | --arch )	shift
+						arch=$1
+						;;
+		-fs | --filesystem )	shift
+						fs=$1
+						;;
+		-file | --testcase )	shift
+						FILE=$1
+						;;
+		-s | --size )		shift
+						size=$1
+						;;
+		-h | --help )		display_help
+						exit
+						;;
+		* )					display_help
+						exit 1
+	esac
+	shift
+done
+
+rm -f disk.img
+dd if=/dev/zero of=disk.img bs=4M count=$size
+
+if [ "$fs" = "ext4" ]; then
+	mkfs.ext4 -t ext4 disk.img
+else if [ "$fs" = "fat32" ]; then
+	fs=fat32
+	mkfs.vfat -F 32 disk.img
+else
+	echo "Unknown filesystem: $fs"
+	exit 1
+fi
+fi
+
+mkdir -p mnt
+
+#### 添加 MacOS 支持
+os=`uname -s`
+if [ "x$os" = "xDarwin" ];then
+	hdiutil detach mnt &gt; /dev/null 2&gt;&amp;1
+	hdiutil attach disk.img -mountpoint mnt
+	echo "Copying $arch $fs $FILE/* to disk"
+	cp -r ./$FILE/* ./mnt/
+	hdiutil detach mnt
+	chmod 777 disk.img
+else
+	sudo mount disk.img mnt
+	# 根据命令行参数生成对应的测例
+	echo "Copying $arch $fs $FILE/* to disk"
+	sudo cp -r ./$FILE/* ./mnt/
+	sudo umount mnt
+	sudo rm -rf mnt
+	sudo chmod 777 disk.img
+fi
+</code></pre>
+<p>可以通过 <code>./build_img.sh --help</code> 查看相关使用方式。一个使用例为：</p>
+<pre><code class="language-shell">./build_img.sh -a x86_64 -fs fat32 -file apps/nimbos/build -s 30
+</code></pre>
+<p>即可在当前目录下生成一个 fat32 文件系统镜像 disk.img，其中包含了 <code>apps/nimbos/build</code> 目录下的所有文件。</p>
+<h2 id="利用文件镜像读取测例并运行"><a class="header" href="#利用文件镜像读取测例并运行">利用文件镜像读取测例并运行</a></h2>
+<p>上一节我们讲到 Starry 目前仍然是将测例硬编码在内存中并且进行读取，但将测例打包为 ramfs 并不是长久之策，只是开发过程的一个过渡。从已经编译好的测例文件镜像进行读取的实现可以参考<a href="https://github.com/xingmin1/Starry-On-ArceOS/commit/e34716404ba4a75e22a8853ce476b7919dece120">这里</a>。当将这一修改合入主线之后，我们会更新本文档。</p>
+<p>假设实现了测例镜像读取，并将 nimbos 的测例利用 <code>build_img.sh</code> 打包为镜像文件，那么我们可以通过以下方式运行内核：</p>
+<pre><code class="language-shell">make ARCH=x86_64 LOG=info AX_TESTCASE=nimbos run BLK=y NET=y
+</code></pre>
+<p>即可在内核启动时加载镜像文件中的测例。</p>
+<h2 id="添加新测例"><a class="header" href="#添加新测例">添加新测例</a></h2>
+<h3 id="添加源代码"><a class="header" href="#添加源代码">添加源代码</a></h3>
+<p>目前 Starry 主线的测例均是通过源代码编译得到的。一个规范的方式是将新测例的源代码放置在 <code>apps/&lt;testcases&gt;</code> 目录下，并可以支持通过 <code>make user_apps</code> 统一完成编译生成至 <code>apps/&lt;testcases&gt;/build</code> 目录下。可以参考 nimbos 测例和 libc 测例。</p>
+<h3 id="添加二进制文件"><a class="header" href="#添加二进制文件">添加二进制文件</a></h3>
+<p>对于宏内核来说，相当多的测例是通过二进制文件进行测试的。但直接上传二进制文件会导致仓库体积过大。目前常见的解决方案是将测试文件上传到某一个固定的 release 版本中，然后通过 wget 脚本下载到本地进行测试。目前暂时未完成相关工作。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-概述"><a class="header" href="#starry-概述">Starry 概述</a></h1>
+<p>本章我们将介绍 Starry 的背景、内核结构设计和实现功能。整个流程分为以下几个部分：</p>
+<ul>
+<li><a href="ch02-01.html">背景说明</a></li>
+<li><a href="ch02-02.html">内核结构设计</a></li>
+<li><a href="ch02-03.html">Starry 目前实现功能</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="背景说明"><a class="header" href="#背景说明">背景说明</a></h1>
+<p>TODO</p>
+<ul>
+<li>
+<p>基座仓库 arceos：https://github.com/arceos-org/arceos</p>
+</li>
+<li>
+<p>旧版 Starry 仓库: https://github.com/Starry-OS/Starry-Old</p>
+</li>
+<li>
+<p>starry-next 仓库:</p>
+<ul>
+<li>上游仓库: https://github.com/arceos-org/starry-next</li>
+<li>本文档基于的是维护更加及时的下游仓库: https://github.com/Azure-stars/starry-next</li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="内核结构设计"><a class="header" href="#内核结构设计">内核结构设计</a></h1>
+<h2 id="基座内核设计"><a class="header" href="#基座内核设计">基座内核设计</a></h2>
+<p>基座内核 ArceOS 以组件化内核的思想进行设计，设计架构图如下：</p>
+<p><img src="./assets/arceos.png" alt="" /></p>
+<p>每一个模块的简要介绍如下：</p>
+<ul>
+<li>
+<p>crates layer: 内核无关组件，如 <code>page_table</code>, <code>slab_allocator</code>, <code>spinlock</code> 等，可以方便地给其他内核进行复用</p>
+</li>
+<li>
+<p>modules layer: 内核相关的组件。他们与内核的核心功能相关，不容易解耦出来给其他内核使用，但是对内核本身的功能以及重构有重要作用。</p>
+<ul>
+<li>axalloc: 用于内核内存分配的模块</li>
+<li>axfs: 文件系统管理模块, 接入了 fat32</li>
+<li>axhal: 硬件抽象层模块</li>
+<li>axnet: 网络管理模块，接入了 smoltcp 网络协议栈</li>
+<li>axdriver: 驱动管理模块</li>
+<li>axtask: 任务管理模块，包括任务单元的定义和调度功能的实现</li>
+<li>axsync: 同步原语模块，包括一些 mutex 等同步原语等实现</li>
+<li>axmm: 地址空间管理模块，包括内存映射等功能的实现</li>
+</ul>
+</li>
+<li>
+<p>axfeat: feature 描述层，用于进行 feature 的定制和转发，从而实现组件定制化的功能</p>
+<ul>
+<li>feature 是 rust 条件编译的重要环节，详见<a href="https://doc.rust-lang.org/cargo/reference/features.html">文档</a></li>
+</ul>
+</li>
+<li>
+<p>api layer: ArceOS 对外提供的接口层</p>
+<ul>
+<li>arceos_posix_api: POSIX 接口兼容实现层，在初始时是调用了 Unikernel 的接口，在 Starry 中会为其加入更多宏内核的支持</li>
+<li>arceos_api: Unikernel 自身提供的接口层，用于其他应用程序调用内核的功能</li>
+</ul>
+</li>
+<li>
+<p>ulib layer: 用户库层，将 api layer 的接口进一步封装为更加兼容、常见的接口</p>
+<ul>
+<li>axstd: rust std 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 std 接口</li>
+<li>axlibc: libc 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 libc 接口</li>
+</ul>
+</li>
+<li>
+<p>user layer: 用户层，包括用户程序和用户程序的测试用例</p>
+<ul>
+<li>rust app: rust 语言编写的用户程序，调用 axstd 从而调用 Unikernel 内核的功能</li>
+<li>c app: c 语言编写的用户程序，与 axlibc 链接从而调用 Unikernel 内核的功能</li>
+</ul>
+</li>
+</ul>
+<h2 id="异构内核设计实现"><a class="header" href="#异构内核设计实现">异构内核设计实现</a></h2>
+<h3 id="设计目标"><a class="header" href="#设计目标">设计目标</a></h3>
+<p>ArceOS 希望实现灵活内核架构，即是通过使用一套框架搭建不同架构的内核，在内核架构和功能上都达到定制的目的，从而做到 <strong>one architecture to build all</strong>。它有如下特性：</p>
+<ul>
+<li>
+<p>用一套框架搭建各种架构的内核</p>
+<ul>
+<li>Unikernel</li>
+<li>Macrokernel</li>
+<li>Microkernel</li>
+<li>Hypervisor</li>
+<li>New structures defined by the user</li>
+</ul>
+</li>
+<li>
+<p>最大化组件重用</p>
+<ul>
+<li>减少重复编码</li>
+<li>保持功能一致性</li>
+</ul>
+</li>
+<li>
+<p>最大化灵活性</p>
+<ul>
+<li>易于扩展到新的内核架构</li>
+</ul>
+</li>
+</ul>
+<h3 id="设计思路"><a class="header" href="#设计思路">设计思路</a></h3>
+<p>基本思路：</p>
+<ul>
+<li>Unikernel 是所有内核架构的交集</li>
+<li>将可定制的 Unikernel 作为基本框架与执行环境（Kernel Backbone）</li>
+<li>将各种架构的内核视为 Unikernel 上的 App（Kernel Plugin）</li>
+</ul>
+<p>利用 Backbone 和 Plugin 的关系，我们可以实现不同架构的内核，对于宏内核和 hypervisor 的设计图如下：
+<img src="./assets/backbone.png" alt="异构内核设计" /></p>
+<p>通过运行不同的内核应用扩展，我们就可以定制不同架构的内核。starry-next 即是对宏内核扩展的实践。我们期望做到：在不需要完全了解底层内核具体技术实现的情况下，<strong>通过提供的接口，即可完成宏内核功能的扩展</strong>。</p>
+<h2 id="starry-next-如何实现宏内核功能"><a class="header" href="#starry-next-如何实现宏内核功能">starry-next 如何实现宏内核功能</a></h2>
+<p>starry-next 是对 ArceOS 的扩展。依据 Plugin 的设计，它作为 ArceOS 的一个应用（这里我们称为<strong>内核应用</strong>）开始运行。对应在 Makefile 下的执行逻辑是：</p>
+<pre><code class="language-Makefile">AX_ROOT ?= $(PWD)/.arceos
+# Makefile under starry-next folders
+build run justrun debug disasm: ax_root
+	@make -C $(AX_ROOT) A=$(PWD) FEATURES=$(FEATURES) $@
+</code></pre>
+<p>这里可以看到它通过 <code>-C $(AX_ROOT)</code> 指定了调用 ArceOS 的 Makefile，并制定运行的内核应用为当前目录，即 starry-next。</p>
+<p>查看 starry-next 的 Cargo.toml 文件如下：</p>
+<pre><code class="language-toml">[dependencies]
+log = "0.4"
+linkme = "0.3"
+axerrno = "0.1"
+memory_addr = "0.3"
+xmas-elf = "0.9"
+bitflags = "2.6"
+kernel-elf-parser = "0.1.0"
+num_enum = { version = "0.7", default-features = false }
+syscalls = { version = "0.6", default-features = false }
+
+axstd = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic", features = ["paging"] }
+axhal = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic", features = ["uspace"] }
+axmm = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic" }
+axtask = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic" }
+axsync = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic" }
+axruntime = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic", features = ["multitask"] }
+arceos_posix_api = { git = "https://github.com/arceos-org/arceos.git", branch = "monolithic" }
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86 = "0.52"
+
+[build-dependencies]
+toml_edit = "0.22"
+</code></pre>
+<blockquote>
+<p>由于目前宏内核实现仍然未合入主线，因此我们手动指定了 <code>monolithic</code> 分支。</p>
+</blockquote>
+<p>这里比较重要的是对于 <code>axhal</code> 启动了 <code>uspace</code> feature, <code>axhal</code> 模块中标注了 <code>uspace</code> feature 的实现可以看到，它包含如下内容：</p>
+<ul>
+<li><code>UspaceContext</code> 实现，包含了用户态上下文的定义与进入用户态的初始化代码</li>
+<li>Syscall trap 接收与转发</li>
+<li>User trap and exit 实现
+当添加了这些必要内容之后，我们就对 Unikernel 提供的 Task 结构添加了进入用户态的能力。在 <code>src/task.rs</code> 下我们调用 <code>spawn_user_task</code> 的时候，就可以创建一个即将进入用户态、运行用户应用的任务了。</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn spawn_user_task(aspace: Arc&lt;Mutex&lt;AddrSpace&gt;&gt;, uctx: UspaceContext) -&gt; AxTaskRef {
+    let mut task = TaskInner::new(
+        || {
+            let curr = axtask::current();
+            let kstack_top = curr.kernel_stack_top().unwrap();
+            // 设置任务上下文，让任务在开始被调度之后尝试进入用户态
+            unsafe { curr.task_ext().uctx.enter_uspace(kstack_top) };
+        },
+        "userboot".into(),
+        crate::config::KERNEL_STACK_SIZE,
+    );
+    task.ctx_mut()
+        .set_page_table_root(aspace.lock().page_table_root());
+    task.init_task_ext(TaskExt::new(uctx, aspace));
+    axtask::spawn_task(task)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>按照这个思路，我们可以做到在最小化添加 uspace feature 的情况下，实现宏内核的功能扩展。Unikernel 已有的任务调度、文件系统、网络栈等服务都可以直接被宏内核所复用。此后只需要根据 POSIX syscall 标准，在上层的内核应用中实现对应的系统调用，即可适配更多的应用。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-实现功能"><a class="header" href="#starry-实现功能">Starry 实现功能</a></h1>
+<p>本文档所指的 arceos 宏内核扩展是最近正在重构的 Starry。事实上在两年前我们开发了第一版的 Starry，并作为作品参与全国大学生计算机系统能力大赛内核实现赛道，在两年期间也实现了许多功能。本章节讲解的是第一版 Starry（或者可以称为 Old-Starry）的功能。</p>
+<h2 id="支持的标准测例"><a class="header" href="#支持的标准测例">支持的标准测例</a></h2>
+<p>Starry 目前支持的测例包括：</p>
+<ul>
+<li>busybox</li>
+<li>lmbench</li>
+<li>unixbench</li>
+<li>libc-test</li>
+<li>libc-bench</li>
+<li>cyclitest</li>
+<li>netperf/iperf</li>
+</ul>
+<h2 id="支持的经典应用"><a class="header" href="#支持的经典应用">支持的经典应用</a></h2>
+<ul>
+<li>
+<p>Tokio：Starry 已经可以运行 Tokio 的 <a href="https://github.com/tokio-rs/tokio/tree/master/examples">examples</a></p>
+</li>
+<li>
+<p>Dora： 面向数据流的机器人应用程序 Dora-rs 是一个中间件应用。他们通过使用共享内存和 Apache Arrow 实现内存零拷贝，降低传统的机器人框架中间件如 ROS2 的通信开销，在性能上表现出了较大的优势。
+以下为 Dora 的相关资料：</p>
+<ul>
+<li>官网： https://dora-rs.ai/</li>
+<li>代码仓库： https://github.com/dora-rs/dora</li>
+</ul>
+<p>关于 Dora 的详细说明和 Dora on ArceOS 的支持说明可以查看 <a href="https://github.com/Starry-OS/Dora-analysis">Dora-analysis</a>。</p>
+</li>
+<li>
+<p>gcc：可以运行 gcc 编译器编译最基本的程序</p>
+</li>
+<li>
+<p>redis：可以运行 redis 数据库，并与局域网内其他主机交互存储数据</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="在组件化系统上开发新内容"><a class="header" href="#在组件化系统上开发新内容">在组件化系统上开发新内容</a></h1>
+<p>本章节将描述如何在组件化系统上开发新内容。我们将会讨论如何利用组件化的思想，降低开发新功能的难度，并给出一些功能示例，帮助你更好地理解组件化的概念。</p>
+<p>本章的流程如下：</p>
+<ul>
+<li><a href="ch03-01.html">添加一个新的 syscall</a></li>
+<li><a href="ch03-02.html">适配新应用</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="添加一个新的-syscall"><a class="header" href="#添加一个新的-syscall">添加一个新的 syscall</a></h1>
+<p>我们以添加一个新的 syscall 为例，说明组件化内核开发的流程和特点。基于的初始 commit 为<a href="https://github.com/Azure-stars/starry-next/commit/64dcf6ad964030f6b6c633b72406c51566179abf">here</a>。</p>
+<h2 id="模块结构"><a class="header" href="#模块结构">模块结构</a></h2>
+<p>组件化的思想允许我们尽可能地为同一内核的不同形态，甚至是不同内核来复用相同的实现。对于同一内核来说，可以复用的内容更多，不仅包括内核无关模块(crates layer)，还包括内核相关模块(modules layer)。前文提到了 modules layer 中的 arceos_posix_api 是 Unikernel 为了实现 POSIX 接口兼容而适配的内容。事实上对于宏内核和 Unikernel 来说，POSIX 接口的许多<strong>操作语义</strong>是通用的，只是对于资源归属不同。</p>
+<p>一个例子是打开文件，对于 Unikernel 来说打开的文件描述符是归属于全局的，而对于宏内核来说，每一个进程都有自己的文件描述符表。但是打开文件的操作语义是一样的，所以我们可以将打开文件的操作语义抽象出来，放在 modules layer 中，供不同形态的内核复用。</p>
+<p>因此对于 Starry 开发而言，我们可以充分利用 arceos_posix_api 等模块已经提供好的接口，采用直接复用或者继承的方式来实现新的功能。这样做的好处是，我们可以更加只关心接口的语义，不用关心底层的实现细节，从而专注于新功能的实现，提高开发的效率。</p>
+<p>关于 ArceOS 中各个模块的相关接口定义，详见<a href="./appendix-00.html">附录</a>。</p>
+<h2 id="复用已有实现"><a class="header" href="#复用已有实现">复用已有实现</a></h2>
+<p>在 ArceOS 已经实现了一些 syscall，例如 <code>sys_clock_gettime</code>，<code>sys_yield</code> 等。这类接口在宏内核和 Unikernel 中的语义和实现都基本一致，因此我们可以直接复用这些 syscall 的实现，而不用重新实现一遍。</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arceos_posix_api as api;
+
+pub(crate) fn sys_clock_gettime(clock_id: i32, tp: *mut api::ctypes::timespec) -&gt; i32 {
+    unsafe { api::sys_clock_gettime(clock_id, tp) }
+}
+
+pub(crate) fn sys_sched_yield() -&gt; i32 {
+    api::sys_sched_yield()
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="对已有实现进行扩展与检查"><a class="header" href="#对已有实现进行扩展与检查">对已有实现进行扩展与检查</a></h2>
+<p>宏内核中常常需要对调用的 syscall 进行检查，例如检查参数是否合法，是否有权限等。这些检查在 Unikernel 中是不需要的。另外宏内核中每一个 syscall 的功能可能会更加丰富，涉及更多可选参数。此时我们需要将 Unikernel 已有的功能当作底层的实现，并为其封装满足 POSIX 接口的检查和其他可选实现。</p>
+<p>本章节涉及的 syscall 和文档如下：</p>
+<ul>
+<li><a href="https://manpages.debian.org/unstable/manpages-dev/arch_prctl.2.en.html">arch_prctl</a></li>
+<li><a href="https://manpages.debian.org/unstable/manpages-dev/mmap.2.en.html">mmap</a></li>
+<li><a href="https://manpages.debian.org/unstable/manpages-dev/clock_nanosleep.2.en.html">clock_nanosleep</a></li>
+</ul>
+<p>以下为 clock_nanosleep 和 arch_prctl syscall 的实现。其中 arch_prctl 通过解析用户传来的参数，并且选择性调用内核 axhal 提供的功能完成实现，从而<strong>避免在上层引入硬件层相关的代码，让上层能够尽可能做好抽象和隔离</strong>。</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub(crate) fn sys_clock_nanosleep(
+    clock_id: clockid_t,
+    flags: isize,
+    req: *const timespec,
+    rem: *mut timespec,
+) -&gt; i32 {
+    // CLOCK defaults to CLOCK_REALTIME
+    // flags defaults to 0
+
+    if clock_id != api::ctypes::CLOCK_REALTIME as clockid_t {
+        // For older linux headers, it does not define ENOTSUP, so we use EOPNOTSUPP instead
+        return -LinuxError::EOPNOTSUPP.code();
+    }
+
+    if flags != 0 {
+        return -LinuxError::EOPNOTSUPP.code();
+    }
+
+    unsafe { api::sys_nanosleep(req, rem) }
+}
+
+#[cfg(target_arch = "x86_64")]
+pub(crate) fn sys_arch_prctl(code: i32, addr: u64) -&gt; isize {
+    use axerrno::LinuxError;
+    syscall_body!(sys_arch_prctl, {
+        match ArchPrctlCode::try_from(code) {
+            // TODO: check the legality of the address
+            Ok(ArchPrctlCode::SetFs) =&gt; {
+                unsafe {
+                    axhal::arch::write_thread_pointer(addr as usize);
+                }
+                Ok(0)
+            }
+            Ok(ArchPrctlCode::GetFs) =&gt; {
+                unsafe {
+                    *(addr as *mut u64) = axhal::arch::read_thread_pointer() as u64;
+                }
+                Ok(0)
+            }
+            Ok(ArchPrctlCode::SetGs) =&gt; {
+                unsafe {
+                    x86::msr::wrmsr(x86::msr::IA32_KERNEL_GSBASE, addr);
+                }
+                Ok(0)
+            }
+            Ok(ArchPrctlCode::GetGs) =&gt; {
+                unsafe {
+                    *(addr as *mut u64) = x86::msr::rdmsr(x86::msr::IA32_KERNEL_GSBASE);
+                }
+                Ok(0)
+            }
+            _ =&gt; Err(LinuxError::ENOSYS),
+        }
+    })
+}
+<span class="boring">}</span></code></pre></pre>
+<p>另一个例子是 mmap syscall，它的功能相当强大且复杂，底层 axmm 模块仅提供了最简功能，由开发者在上层自行实现与完善。我们需要根据 mmap 的各种 flags 来实现不同的功能，例如 MAP_FIXED，MAP_PRIVATE 等。以下是 mmap syscall 的一个示例实现。</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span>
+<span class="boring">fn main() {
+</span>pub(crate) fn sys_mmap(
+    addr: *mut usize,
+    length: usize,
+    prot: i32,
+    flags: i32,
+    _fd: i32,
+    _offset: isize,
+) -&gt; usize {
+    syscall_body!(sys_mmap, {
+        let curr = current();
+        let curr_ext = curr.task_ext();
+        let mut aspace = curr_ext.aspace.lock();
+        let permission_flags = MmapProt::from_bits_truncate(prot);
+        // TODO: check illegal flags for mmap
+        // An example is the flags contained none of MAP_PRIVATE, MAP_SHARED, or MAP_SHARED_VALIDATE.
+        let map_flags = MmapFlags::from_bits_truncate(flags);
+
+        let start_addr = if map_flags.contains(MmapFlags::MAP_FIXED) {
+            VirtAddr::from(addr as usize)
+        } else {
+            aspace
+                .find_free_area(
+                    VirtAddr::from(addr as usize),
+                    length,
+                    VirtAddrRange::new(aspace.base(), aspace.end()),
+                )
+                .or(aspace.find_free_area(
+                    aspace.base(),
+                    length,
+                    VirtAddrRange::new(aspace.base(), aspace.end()),
+                ))
+                .ok_or(LinuxError::ENOMEM)?
+        };
+
+        aspace.map_alloc(start_addr, length, permission_flags.into(), false)?;
+
+        Ok(start_addr.as_usize())
+    })
+}
+<span class="boring">}</span></code></pre></pre>
+<p>我们的示例也仅仅实现了标准的 mmap 功能，对于 mmap 的更多功能，例如 MAP_SHARED 等，需要进一步完善。</p>
+<h2 id="实现较为独立的功能"><a class="header" href="#实现较为独立的功能">实现较为独立的功能</a></h2>
+<p>在部分情况下，我们需要实现一些独立的新功能，一个例子是 clone syscall。clone syscall 在 Unikernel 和宏内核中有较大差异，因为 Unikernel 并不支持多线程，此时我们需要根据 clone 的语义在 starry-next 中实现 clone syscall。</p>
+<p>相关的实现 TODO</p>
+<p>可以参考：https://github.com/xingmin1/Starry-On-ArceOS/commit/6ed611e93a787d1b7f2d6bf23bcfec1b597e026a</p>
+<p>但是这类 syscall 相对来说会少一些，而且我们会尽可能尝试利用已有的组件和接口来实现新功能，从而减少重复工作。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="适配新应用"><a class="header" href="#适配新应用">适配新应用</a></h1>
+<p>宏内核是否成熟的一个重要标准是它是否能够适配更多通用应用。在这一节中，我们将介绍如何适配一个新的应用。</p>
+<h2 id="应用分析"><a class="header" href="#应用分析">应用分析</a></h2>
+<p>假设我们现在选择即将支持一个复杂的应用 ZLMediaKit，它是一个开源的流媒体服务器，支持 RTSP、RTMP、HTTP-FLV 等多种协议。我们的目标是将它移植到宏内核上。</p>
+<p>分析这个应用的流程如下：</p>
+<ol>
+<li>
+<p>大致了解应用的用途和功能：ZLMediaKit 是一个流媒体服务器，对网络互联以及性能是存在要求的，因此网络部分应当是关键路径。</p>
+</li>
+<li>
+<p>尝试在 Linux 等成熟系统上运行应用，明确操作逻辑和依赖：ZLMediaKit 依赖于 FFmpeg、libx264 等库，需要配置好环境变量和依赖库。</p>
+<blockquote>
+<p>注意：这里的依赖可能包括第三方的库，也可能包括 Linux 自身的一些特性，如动态链接、VDSO 等。</p>
+</blockquote>
+</li>
+<li>
+<p>列出应用所使用到的系统调用，这一步可以采用 strace 等工具进行分析。</p>
+<blockquote>
+<p>strace 工具可以跟踪应用的系统调用，从而分析应用的行为。例如，我们可以通过 <code>strace -f -o zlmediakit.log ./zlmediakit</code> 来分析应用的系统调用。相关的文档可以查看 <a href="https://man7.org/linux/man-pages/man1/strace.1.html">strace</a></p>
+</blockquote>
+</li>
+<li>
+<p>详细分析这些 syscall，确定哪些 syscall 功能是必需实现，哪些可以暂时不实现（如直接返回 0）。</p>
+<p>实现 syscall 并不需要将其所有可选功能都实现，只需要实现应用所必需的功能，如对 mmap 仅实现 MAP_FIXED 等即可。这样可以减少开发的复杂度，提高开发效率。因此分析 syscall 的时候不仅要分析用到了哪些 syscall，还要分析这些 syscall 的哪些具体功能是必需的。</p>
+<blockquote>
+<p>这里有一个<a href="https://github.com/Arceos-monolithic/ZLMediaKit-analysis">参考分析</a>可以查看。它通过对 ZLMediaKit 的执行过程进行分析，从而找到了某些不必要实现的 syscall。</p>
+</blockquote>
+<blockquote>
+<p>有一篇论文专门用动态分析的方法，对 syscall 的必要性进行了分析，可以参考 <a href="https://arxiv.org/abs/2309.15996">Loupe:Driving the Development of OS Compatibility Lavers</a></p>
+</blockquote>
+</li>
+<li>
+<p>实现这些 syscall，逐步调试应用，直到应用能够正常运行。</p>
+</li>
+</ol>
+<p>按照上述流程，我们可以逐步适配新的应用。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附录-接口文档"><a class="header" href="#附录-接口文档">附录: 接口文档</a></h1>
+<p>本章节简要介绍组件化系统 ArceOS 中不同模块的功能与接口文档。</p>
+<h2 id="arceos"><a class="header" href="#arceos">ArceOS</a></h2>
+<p>基座内核 ArceOS 以组件化内核的思想进行设计，设计架构图如下：</p>
+<p><img src="./assets/arceos.png" alt="" /></p>
+<p>每一个模块的简要介绍如下：</p>
+<ul>
+<li>
+<p>crates layer: 内核无关组件，如 <code>page_table</code>, <code>slab_allocator</code>, <code>spinlock</code> 等，可以方便地给其他内核进行复用</p>
+</li>
+<li>
+<p>modules layer: 内核相关的组件。他们与内核的核心功能相关，不容易解耦出来给其他内核使用，但是对内核本身的功能以及重构有重要作用。</p>
+<ul>
+<li>axalloc: 用于内核内存分配的模块</li>
+<li>axfs: 文件系统管理模块, 接入了 fat32</li>
+<li>axhal: 硬件抽象层模块</li>
+<li>axnet: 网络管理模块，接入了 smoltcp 网络协议栈</li>
+<li>axdriver: 驱动管理模块</li>
+<li>axtask: 任务管理模块，包括任务单元的定义和调度功能的实现</li>
+<li>axsync: 同步原语模块，包括一些 mutex 等同步原语等实现</li>
+<li>axmm: 地址空间管理模块，包括内存映射等功能的实现</li>
+</ul>
+</li>
+<li>
+<p>axfeat: feature 描述层，用于进行 feature 的定制和转发，从而实现组件定制化的功能</p>
+<ul>
+<li>feature 是 rust 条件编译的重要环节，详见<a href="https://doc.rust-lang.org/cargo/reference/features.html">文档</a></li>
+</ul>
+</li>
+<li>
+<p>api layer: ArceOS 对外提供的接口层</p>
+<ul>
+<li>arceos_posix_api: POSIX 接口兼容实现层，在初始时是调用了 Unikernel 的接口，在 Starry 中会为其加入更多宏内核的支持</li>
+<li>arceos_api: Unikernel 自身提供的接口层，用于其他应用程序调用内核的功能</li>
+</ul>
+</li>
+<li>
+<p>ulib layer: 用户库层，将 api layer 的接口进一步封装为更加兼容、常见的接口</p>
+<ul>
+<li>axstd: rust std 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 std 接口</li>
+<li>axlibc: libc 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 libc 接口</li>
+</ul>
+</li>
+<li>
+<p>user layer: 用户层，包括用户程序和用户程序的测试用例</p>
+<ul>
+<li>rust app: rust 语言编写的用户程序，调用 axstd 从而调用 Unikernel 内核的功能</li>
+<li>c app: c 语言编写的用户程序，与 axlibc 链接从而调用 Unikernel 内核的功能</li>
+</ul>
+</li>
+</ul>
+<p>关于 ArceOS 的接口更加详细的说明文档位于：<a href="https://arceos.org/arceos/">arceos</a></p>
+<p>其他相关材料包括：</p>
+<ul>
+<li>Unikernel 架构说明： https://dl.acm.org/doi/10.1145/2490301.2451167</li>
+<li>ArceOS 指导书 https://rcore-os.cn/arceos-tutorial-book/index.html</li>
+<li>ArceOS 教学视频：https://opencamp.cn/os2edu/camp/2024fall/stage/3</li>
+</ul>
+<h2 id="starry"><a class="header" href="#starry">Starry</a></h2>
+<p>Starry 的目录结构为：</p>
+<ul>
+<li>main.rs：宏内核扩展的入口</li>
+<li>task.rs：宏内核扩展 task 的定义和实现，利用了 task extension 机制</li>
+<li>mm.rs：ELF 文件加载和映射管理</li>
+<li>syscall_imp/：系统调用的具体实现</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
