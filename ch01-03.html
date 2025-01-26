@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>为 Starry 添加新测例 - Starry Tutorial Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Starry Tutorial Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure-stars/Starry-Tutorial-Book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="为-starry-添加新测例"><a class="header" href="#为-starry-添加新测例">为 Starry 添加新测例</a></h1>
+<h2 id="从已有二进制文件编译文件系统镜像"><a class="header" href="#从已有二进制文件编译文件系统镜像">从已有二进制文件编译文件系统镜像</a></h2>
+<p>目前 Starry 主线仅支持 fat32 文件系统，但我们之前做过 ext4 文件系统的<a href="https://github.com/Starry-OS/Starry-Old/blob/main/modules/axfs/src/fs/ext4_rs.rs">尝试</a>。因此我们同时介绍生成 fat32 和 ext4 文件系统镜像的方法。</p>
+<p>以下脚本来自于 <a href="https://github.com/Starry-OS/Starry-Old/blob/main/build_img.sh">build_img.sh</a></p>
+<pre><code class="language-shell">#!/bin/sh
+################################################################
+# 	MacOS  : brew install dosfstools
+# 	Ubuntu : apt-get install dosfstools
+#	Usage:
+# 		build_img.sh -a [arch] -fs [ext4|fat32] -file [testcase] -s [size]
+################################################################
+# default setting
+arch=x86_64
+fs=fat32
+size=30
+FILE=
+
+display_help()
+{
+	echo ""
+	echo "./build_img.sh -a [arch] -fs [filesystem] -file [testcase]"
+	# 若不指定参数，则使用默认的测例
+	echo "  -a | --arch		architecture: x86_64|riscv64|aarch64", default is x86_64
+	echo "  -fs | --filesystem	filesystem: ext4|fat32", default is fat32
+	echo "  -file | --testcase  directory of the binary testcases"
+	echo "  -s | --size		size of the disk image in 4MB batch size, default is set to 30, which means 120MB disk image"
+	echo "  -h | --help		display help"
+	echo ""
+	exit 1
+}
+
+# 可能接受四类参数 -a [arch] -fs [filesystem] -file [testcase] -s [size]
+# 但是不一定只有一个参数，所以使用 while 循环
+while [ "$1" != "" ]; do
+	case $1 in
+		-a | --arch )	shift
+						arch=$1
+						;;
+		-fs | --filesystem )	shift
+						fs=$1
+						;;
+		-file | --testcase )	shift
+						FILE=$1
+						;;
+		-s | --size )		shift
+						size=$1
+						;;
+		-h | --help )		display_help
+						exit
+						;;
+		* )					display_help
+						exit 1
+	esac
+	shift
+done
+
+rm -f disk.img
+dd if=/dev/zero of=disk.img bs=4M count=$size
+
+if [ "$fs" = "ext4" ]; then
+	mkfs.ext4 -t ext4 disk.img
+else if [ "$fs" = "fat32" ]; then
+	fs=fat32
+	mkfs.vfat -F 32 disk.img
+else
+	echo "Unknown filesystem: $fs"
+	exit 1
+fi
+fi
+
+mkdir -p mnt
+
+#### 添加 MacOS 支持
+os=`uname -s`
+if [ "x$os" = "xDarwin" ];then
+	hdiutil detach mnt &gt; /dev/null 2&gt;&amp;1
+	hdiutil attach disk.img -mountpoint mnt
+	echo "Copying $arch $fs $FILE/* to disk"
+	cp -r ./$FILE/* ./mnt/
+	hdiutil detach mnt
+	chmod 777 disk.img
+else
+	sudo mount disk.img mnt
+	# 根据命令行参数生成对应的测例
+	echo "Copying $arch $fs $FILE/* to disk"
+	sudo cp -r ./$FILE/* ./mnt/
+	sudo umount mnt
+	sudo rm -rf mnt
+	sudo chmod 777 disk.img
+fi
+</code></pre>
+<p>可以通过 <code>./build_img.sh --help</code> 查看相关使用方式。一个使用例为：</p>
+<pre><code class="language-shell">./build_img.sh -a x86_64 -fs fat32 -file apps/nimbos/build -s 30
+</code></pre>
+<p>即可在当前目录下生成一个 fat32 文件系统镜像 disk.img，其中包含了 <code>apps/nimbos/build</code> 目录下的所有文件。</p>
+<h2 id="利用文件镜像读取测例并运行"><a class="header" href="#利用文件镜像读取测例并运行">利用文件镜像读取测例并运行</a></h2>
+<p>上一节我们讲到 Starry 目前仍然是将测例硬编码在内存中并且进行读取，但将测例打包为 ramfs 并不是长久之策，只是开发过程的一个过渡。从已经编译好的测例文件镜像进行读取的实现可以参考<a href="https://github.com/xingmin1/Starry-On-ArceOS/commit/e34716404ba4a75e22a8853ce476b7919dece120">这里</a>。当将这一修改合入主线之后，我们会更新本文档。</p>
+<p>假设实现了测例镜像读取，并将 nimbos 的测例利用 <code>build_img.sh</code> 打包为镜像文件，那么我们可以通过以下方式运行内核：</p>
+<pre><code class="language-shell">make ARCH=x86_64 LOG=info AX_TESTCASE=nimbos run BLK=y NET=y
+</code></pre>
+<p>即可在内核启动时加载镜像文件中的测例。</p>
+<h2 id="添加新测例"><a class="header" href="#添加新测例">添加新测例</a></h2>
+<h3 id="添加源代码"><a class="header" href="#添加源代码">添加源代码</a></h3>
+<p>目前 Starry 主线的测例均是通过源代码编译得到的。一个规范的方式是将新测例的源代码放置在 <code>apps/&lt;testcases&gt;</code> 目录下，并可以支持通过 <code>make user_apps</code> 统一完成编译生成至 <code>apps/&lt;testcases&gt;/build</code> 目录下。可以参考 nimbos 测例和 libc 测例。</p>
+<h3 id="添加二进制文件"><a class="header" href="#添加二进制文件">添加二进制文件</a></h3>
+<p>对于宏内核来说，相当多的测例是通过二进制文件进行测试的。但直接上传二进制文件会导致仓库体积过大。目前常见的解决方案是将测试文件上传到某一个固定的 release 版本中，然后通过 wget 脚本下载到本地进行测试。目前暂时未完成相关工作。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch01-02.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch01-04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch01-02.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch01-04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
