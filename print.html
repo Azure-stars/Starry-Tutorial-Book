@@ -1,0 +1,779 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Starry Tutorial Book</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Starry Tutorial Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/oscomp/starry-next" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="关于-starry"><a class="header" href="#关于-starry">关于 Starry</a></h1>
+<ul>
+<li><a href="ch01-01.html">Starry 概述</a></li>
+<li><a href="ch01-02.html">Starry 支持情况</a></li>
+<li><a href="ch01-03.html">Starry 应用场景</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-概述"><a class="header" href="#starry-概述">Starry 概述</a></h1>
+<p>Starry 是基于 <a href="https://github.com/arceos-org/arceos">ArceOS</a> 编写的、兼容 Linux 接口的宏内核。它拥有如下特点：</p>
+<ol>
+<li>跨平台支持：支持 x86_64/riscv64/aarch64/loongarch64 等多种指令架构，可以运行在星光二代、飞腾派等多种硬件平台上。</li>
+<li>安全性：内核完全使用 Rust 语言编写，提供了内存安全、线程安全等多种安全保障。</li>
+<li>Linux 兼容：对外提供标准的 POSIX 接口</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="支持情况"><a class="header" href="#支持情况">支持情况</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="应用场景"><a class="header" href="#应用场景">应用场景</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="快速上手-starry"><a class="header" href="#快速上手-starry">快速上手 Starry</a></h1>
+<ul>
+<li><a href="ch02-01.html">环境配置</a></li>
+<li><a href="ch02-02.html">Qemu 快速上手</a></li>
+<li><a href="ch02-03.html">飞腾派启动</a></li>
+<li><a href="ch02-04.html">泉城x86工控机启动</a></li>
+<li><a href="ch02-05.html">星光派二代 SiFive 启动</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="实验环境配置"><a class="header" href="#实验环境配置">实验环境配置</a></h1>
+<p>下面是初步的本地配置过程</p>
+<h2 id="实验环境"><a class="header" href="#实验环境">实验环境</a></h2>
+<ul>
+<li>操作系统：Ubuntu 24.04</li>
+<li>QEMU &gt;= 9.1</li>
+<li>musl: x86_64 + riscv64 + aarch64 + loongarch64</li>
+</ul>
+<h2 id="配置rust开发环境"><a class="header" href="#配置rust开发环境">配置Rust开发环境</a></h2>
+<p>首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo，这里我们用官方的安装脚本来安装：</p>
+<p><code>curl https://sh.rustup.rs -sSf | sh</code></p>
+<p>如果通过官方的脚本下载失败了，可以在浏览器的地址栏中输入 <a href="https://sh.rustup.rs/">https://sh.rustup.rs</a> 来下载脚本，在本地运行即可。</p>
+<p>可通过如下命令安装 rustc 的 nightly 版本。</p>
+<pre><code class="language-bash">rustup install nightly
+</code></pre>
+<p>再次确认一下我们安装了正确的 rustc 版本（以下为一个示例）：</p>
+<pre><code class="language-bash">$ rustc --version
+rustc 1.83.0 (90b35a623 2024-11-26)
+</code></pre>
+<h2 id="安装必要依赖"><a class="header" href="#安装必要依赖">安装必要依赖</a></h2>
+<pre><code class="language-bash">echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm main" | sudo tee -a /etc/apt/sources.list
+wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+sudo apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends libclang-19-dev wget make python3 \
+        xz-utils python3-venv ninja-build bzip2 meson cmake dosfstools build-essential \
+        pkg-config libglib2.0-dev git libslirp-dev  \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+</code></pre>
+<h2 id="安装qemu"><a class="header" href="#安装qemu">安装QEMU</a></h2>
+<pre><code class="language-bash"># 安装与qemu相关的软件包
+$ wget https://download.qemu.org/qemu-9.2.1.tar.xz
+$ tar xf qemu-9.2.1.tar.xz \
+    &amp;&amp; cd qemu-9.2.1 \
+    &amp;&amp; ./configure --prefix=/qemu-bin-9.2.1 \
+        --target-list=loongarch64-softmmu,riscv64-softmmu,aarch64-softmmu,x86_64-softmmu,loongarch64-linux-user,riscv64-linux-user,aarch64-linux-user,x86_64-linux-user \
+        --enable-gcov --enable-debug --enable-slirp \
+    &amp;&amp; make -j$(nproc) \
+    &amp;&amp; make install
+# 配置环境变量。。
+# 测试是否正确安装
+$ qemu-system-x86_64 --version
+
+$ rm -rf qemu-9.2.1 qemu-9.2.1.tar.xz
+</code></pre>
+<h2 id="安装-musl-cross-工具链"><a class="header" href="#安装-musl-cross-工具链">安装 musl cross 工具链</a></h2>
+<pre><code class="language-bash">wget https://musl.cc/aarch64-linux-musl-cross.tgz
+wget https://musl.cc/riscv64-linux-musl-cross.tgz
+wget https://musl.cc/x86_64-linux-musl-cross.tgz
+wget https://github.com/LoongsonLab/oscomp-toolchains-for-oskernel/releases/download/loongarch64-linux-musl-cross-gcc-13.2.0/loongarch64-linux-musl-cross.tgz
+# install
+tar zxf aarch64-linux-musl-cross.tgz
+tar zxf riscv64-linux-musl-cross.tgz
+tar zxf x86_64-linux-musl-cross.tgz
+tar zxf loongarch64-linux-musl-cross.tgz
+
+rm -f *.tgz
+</code></pre>
+<h2 id="在-docker-下运行"><a class="header" href="#在-docker-下运行">在 Docker 下运行</a></h2>
+<p>请参考如下 <a href="https://github.com/oscomp/arceos/blob/main/Dockerfile">Dockerfile</a> 。</p>
+<pre><code class="language-dockerfile">FROM rust:slim
+
+RUN apt-get update &amp;&amp; apt-get install -y wget
+
+RUN echo /etc/apt/sources.list &lt;&lt; deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm main
+RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends libclang-19-dev make python3 \
+    xz-utils python3-venv ninja-build bzip2 meson \
+    pkg-config libglib2.0-dev git libslirp-dev cmake dosfstools build-essential \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+RUN cargo install cargo-binutils axconfig-gen
+
+COPY rust-toolchain.toml /rust-toolchain.toml
+
+RUN rustc --version
+
+RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz \
+    &amp;&amp; wget https://musl.cc/riscv64-linux-musl-cross.tgz \
+    &amp;&amp; wget https://musl.cc/x86_64-linux-musl-cross.tgz \
+    &amp;&amp; wget https://github.com/LoongsonLab/oscomp-toolchains-for-oskernel/releases/download/loongarch64-linux-musl-cross-gcc-13.2.0/loongarch64-linux-musl-cross.tgz \
+    &amp;&amp; tar zxf aarch64-linux-musl-cross.tgz \
+    &amp;&amp; tar zxf riscv64-linux-musl-cross.tgz \
+    &amp;&amp; tar zxf x86_64-linux-musl-cross.tgz \
+    &amp;&amp; tar zxf loongarch64-linux-musl-cross.tgz \
+    &amp;&amp; rm -f *.tgz
+
+RUN wget https://download.qemu.org/qemu-9.2.1.tar.xz \
+    &amp;&amp; tar xf qemu-9.2.1.tar.xz \
+    &amp;&amp; cd qemu-9.2.1 \
+    &amp;&amp; ./configure --prefix=/qemu-bin-9.2.1 \
+    --target-list=loongarch64-softmmu,riscv64-softmmu,aarch64-softmmu,x86_64-softmmu,loongarch64-linux-user,riscv64-linux-user,aarch64-linux-user,x86_64-linux-user \
+    --enable-gcov --enable-debug --enable-slirp \
+    &amp;&amp; make -j$(nproc) \
+    &amp;&amp; make install
+RUN rm -rf qemu-9.2.1 qemu-9.2.1.tar.xz
+
+ENV PATH="/x86_64-linux-musl-cross/bin:/aarch64-linux-musl-cross/bin:/riscv64-linux-musl-cross/bin:/loongarch64-linux-musl-cross/bin:/qemu-bin-9.2.1/bin:$PATH"
+
+</code></pre>
+<p>请执行如下指令</p>
+<pre><code class="language-bash">$ git clone git@github.com:oscomp/starry-next.git
+$ cd starry-next
+
+$ ./scripts/get_deps.sh
+$ cd .arceos
+$ docker build -t starry -f ./Dockerfile .
+$ cd ..
+
+# 在项目根目录下构建容器
+$ docker run -it -v $(pwd):/starry -w /starry starry bash
+</code></pre>
+<blockquote>
+<p>若 Docker pull 或 Docker build 出现超时等问题，可能是因为缺乏代理上网的配置。可以参考如下资料：</p>
+<ul>
+<li>Docker pull
+<ul>
+<li>使用代理：https://docs.docker.com/reference/cli/docker/image/pull/#proxy-configuration</li>
+<li>换用可用国内源（自行查找）</li>
+</ul>
+</li>
+<li>Docker build
+<ul>
+<li>使用代理：https://docs.docker.com/engine/cli/proxy/#build-with-a-proxy-configuration</li>
+</ul>
+</li>
+<li>Docker run 也可以使用代理选项，相关操作与 build 类似，可以自行查阅资料</li>
+</ul>
+</blockquote>
+<h2 id="进入项目目录"><a class="header" href="#进入项目目录">进入项目目录</a></h2>
+<pre><code class="language-bash"># 若还未拉取 Starry Next 仓库
+$ git clone git@github.com:oscomp/starry-next.git
+$ cd starry-next
+
+# 拉取基座仓库 ArceOS
+$ ./scripts/get_deps.sh
+
+# 配置 Rust 环境
+$ cd .arceos
+$ rustup target add x86_64-unknown-linux-musl
+$ rustup target add aarch64-unknown-linux-musl
+$ rustup target add riscv64gc-unknown-linux-musl
+$ rustup target add x86_64-unknown-none  
+$ rustup target add riscv64gc-unknown-none-elf
+$ rustup target add aarch64-unknown-none
+$ rustup target add aarch64-unknown-none-softfloat
+$ rustup component add llvm-tools-preview
+$ cargo install cargo-binutils axconfig-gen
+$ cd ..
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="qemu-快速上手"><a class="header" href="#qemu-快速上手">Qemu 快速上手</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="飞腾派启动"><a class="header" href="#飞腾派启动">飞腾派启动</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="泉城x86工控机启动"><a class="header" href="#泉城x86工控机启动">泉城x86工控机启动</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="星光派二代-sifive-启动"><a class="header" href="#星光派二代-sifive-启动">星光派二代 SiFive 启动</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-使用手册"><a class="header" href="#starry-使用手册">Starry 使用手册</a></h1>
+<p>本章的流程如下：</p>
+<ul>
+<li><a href="ch03-01.html">运行基本测例</a></li>
+<li><a href="ch03-02.html">运行OS比赛测例</a></li>
+<li><a href="ch03-03.html">选择启用不同设备和功能</a></li>
+<li><a href="ch03-04.html">运行更多复杂应用</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="运行基本测例"><a class="header" href="#运行基本测例">运行基本测例</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="运行-os-比赛测例"><a class="header" href="#运行-os-比赛测例">运行 OS 比赛测例</a></h1>
+<h2 id="os-比赛介绍"><a class="header" href="#os-比赛介绍">OS 比赛介绍</a></h2>
+<p>本章节所提到的比赛是指<a href="https://os.educg.net/#/index?TYPE=MN_KER">全国大学生计算机系统能力大赛内核实现赛</a>，简称 OS 比赛内核实现赛道。该赛道主要考察内核的功能实现，要求内核运行给定的测试用例，并根据通过测例的数量获得相应的分数。</p>
+<h2 id="测试环境准备"><a class="header" href="#测试环境准备">测试环境准备</a></h2>
+<p>为了运行比赛测例，我们需要准备开发环境和比赛所用的测例镜像。</p>
+<h3 id="准备测例镜像"><a class="header" href="#准备测例镜像">准备测例镜像</a></h3>
+<p>预编译好的测例镜像详见 <a href="https://github.com/Azure-stars/testsuits-for-oskernel/releases/tag/v0.1">testsuit-for-oskernel</a>。其中包括了四种指令架构。当运行时如果没有检测到对应的镜像，会自动进行下载。</p>
+<p>另外也可以使用如下指令，提前将测例镜像下载到本地：</p>
+<pre><code class="language-sh">wget https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-aarch64.img.gz
+wget https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-loongarch64.img.gz
+wget https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-riscv64.img.gz
+wget https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-x86_64.img.gz
+
+gunzip sdcard-aarch64.img.gz
+gunzip sdcard-loongarch64.img.gz
+gunzip sdcard-riscv64.img.gz
+gunzip sdcard-x86_64.img.gz
+</code></pre>
+<h3 id="准备开发环境"><a class="header" href="#准备开发环境">准备开发环境</a></h3>
+<p>请参考 <a href="./ch02-01.html"><strong>实验环境配置</strong></a> 完成开发环境的配置。</p>
+<p>另外也可以执行如下指令拉取赛事评测环境镜像并且启动容器（和本地环境二者选其一即可）</p>
+<pre><code class="language-sh">$ docker pull docker.educg.net/cg/os-contest:20250226
+
+$ docker run --rm --privileged -w /work -v $(pwd):/work docker.educg.net/cg/os-contest:20250226 bin/bash
+</code></pre>
+<h2 id="本地运行-os-比赛测例"><a class="header" href="#本地运行-os-比赛测例">本地运行 OS 比赛测例</a></h2>
+<p>在当前的 Starry 主线代码上，执行如下指令：</p>
+<pre><code class="language-shell">$ ./scripts/get_deps.sh
+
+# 执行 RISC-V 架构的 OS 比赛测例
+$ make oscomp_run ARCH=riscv64
+
+# 执行 Loongarch64 架构的 OS 比赛测例
+$ make oscomp_run ARCH=loongarch64
+</code></pre>
+<p>即可完成 OS 比赛测例的运行。</p>
+<h2 id="在赛事平台上运行-os-比赛测例"><a class="header" href="#在赛事平台上运行-os-比赛测例">在赛事平台上运行 OS 比赛测例</a></h2>
+<h3 id="os-赛事环境介绍"><a class="header" href="#os-赛事环境介绍">OS 赛事环境介绍</a></h3>
+<p>我们以 2025 年赛事为例介绍初赛的执行环境和评测相关流程。</p>
+<h4 id="评测环境"><a class="header" href="#评测环境">评测环境</a></h4>
+<p>执行环境由 Docker 构建而成，相关的 dockerfile 可见<a href="https://gitlab.educg.net/wangmingjian/os-contest-2024-image/-/blob/master/Dockerfile">该链接</a>。该文档撰写时所描述的环境对应如下：</p>
+<ul>
+<li>ArceOS：<a href="https://github.com/oscomp/arceos/commit/199d5dfafa3d814dcf06cd4442543ab927c16e5e">commit</a></li>
+<li>Starry-Next：<a href="https://github.com/oscomp/starry-next/commit/45ca70267388dada83092cca2b2ff4e3376fae41">commit</a></li>
+</ul>
+<p>docker 镜像实例为 docker.educg.net/cg/os-contest:20250214。</p>
+<h4 id="评测用例"><a class="header" href="#评测用例">评测用例</a></h4>
+<p>评测用例源码为：https://github.com/oscomp/testsuits-for-oskernel/tree/pre-2025。按照 README 进行编译之后可以得到 sdcard 文件夹，目录结构如下：</p>
+<pre><code class="language-shell">sdcard
+├── loongarch
+│   ├── glibc
+│   └── musl
+└── riscv
+    ├── glibc
+    └── musl
+</code></pre>
+<p>其中 loongarch64 和 riscv64 会在开始评测之后分别压缩为 sdcard-la.img 和 sdcard-rv.img 拷贝到项目的根目录下，进行评测。压缩指令为：</p>
+<pre><code class="language-shell">dd if=/dev/zero of=sdcard-rv.img count=128 bs=1M
+mkfs.ext4 sdcard-rv.img
+mkdir -p mnt
+mount sdcard-rv.img mnt
+cp -rL sdcard/riscv/* mnt
+umount mnt
+gzip sdcard-rv.img
+
+dd if=/dev/zero of=sdcard-la.img count=128 bs=1M
+mkfs.ext4 sdcard-la.img
+mkdir -p mnt
+mount sdcard-la.img mnt
+cp -rL sdcard/riscv/* mnt
+umount mnt
+gzip sdcard-la.img
+</code></pre>
+<h4 id="评测流程"><a class="header" href="#评测流程">评测流程</a></h4>
+<p><img src="./assets/commit.png" alt="avatar" />
+当在比赛平台上提交了内核代码所在的仓库 URL 和分支（点击上图的<strong>提交</strong>按钮之后)，平台会执行如下流程开始进行评测：</p>
+<ol>
+<li>
+<p>拉取内核仓库的代码</p>
+</li>
+<li>
+<p>自动在项目根目录中执行<code>make all</code>命令，期望生成 kernel-rv 和 kernel-la 两个文件，分别是内核在 riscv64 架构和 loongarch64 架构下编译生成的可执行文件。</p>
+</li>
+<li>
+<p>评测机会将测例所打包成的镜像（sdcard-rv.img 和 sdcard-la.img）拷贝到根目录下，SD 卡镜像为 ext4 文件系统。在 SD 卡镜像的根目录里包含若干个预先编译好的 ELF 可执行文件（以下简称测试点）。</p>
+</li>
+<li>
+<p>启动 QEMU，开始运行内核并且读取 SD 卡镜像进行测试。运行指令如下：</p>
+<pre><code class="language-shell">$ qemu-system-riscv64 -machine virt -kernel ./kernel-rv -m 2G -nographic -smp 2 -bios default -drive file=sdcard-rv.img,if=none,format=raw,id=x0 \
+                    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0 -no-reboot -device virtio-net-device,netdev=net -netdev user,id=net \
+                    -rtc base=utc \
+                    -drive file=disk.img,if=none,format=raw,id=x1 -device virtio-blk-device,drive=x1,bus=virtio-mmio-bus.1
+
+$ qemu-system-loongarch64 -m 1G -smp 1 -kernel ./kernel-la -device virtio-blk-pci,drive=disk0 -drive id=disk0,if=none,format=raw,file=sdcard-la.img -no-reboot -device virtio-net-pci,netdev=net0 -netdev user,id=net0 -nographic -rtc base=utc \
+                     -drive file=disk-la.img,if=none,format=raw,id=x1 -device virtio-blk-pci,drive=x1
+</code></pre>
+</li>
+<li>
+<p>当操作系统执行完所有测试点后，应该主动调用关机命令，评测机会在检测到 QEMU 进程退出后进行打分。</p>
+</li>
+</ol>
+<p>关于作品的评分方式如下：</p>
+<ul>
+<li>操作系统在启动后需要主动扫描SD卡，并依次运行其中每一个测试点，将其运行结果输出到串口上，评测系统会根据您操作系统的串口输出内容进行评分。</li>
+<li>选手可以根据操作系统的完成度自由选择跳过其中若干个测试点，未被运行的测试点将不计分。</li>
+<li>测试点的执行顺序与评分无关，多个测试点只能串行运行，不可同时运行多个测试点。</li>
+<li>具体测试点的数量、内容以及编译方式将在赛题公布时同步发布，2024 年的初赛测例详见<a href="https://github.com/oscomp/testsuits-for-oskernel/tree/pre-2024/riscv-syscalls-testing">这里</a></li>
+</ul>
+<h4 id="特殊注意点"><a class="header" href="#特殊注意点">特殊注意点</a></h4>
+<ul>
+<li>
+<p><strong>除去拉取代测代码之后，应当认为评测机无法访问外部网络</strong>。任何访问外部网络尤其是国外网站的操作很容易导致编译或运行超时而无法完成评测。</p>
+</li>
+<li>
+<p>评测机在构建前会默认无视项目的所有隐藏目录（以 <code>.</code> 开头的文件或目录），若需要使用这部分的配置（如 <code>.cargo</code>）需要自身手动在运行时进行配置（如将<code>.cargo</code>目录下所有内容保存在<code>cargo_temp</code>目录下，并在构建时拷贝<code>cargo_temp</code>到<code>.cargo</code>目录下。</p>
+</li>
+</ul>
+<h3 id="starry-对评测环境的适配"><a class="header" href="#starry-对评测环境的适配">Starry 对评测环境的适配</a></h3>
+<p>为了能够在评测环境上对 Starry 进行测试，需要进行相关的适配。适配后的代码详见 <a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/pre2025test">starry-next-gitlab</a>。您可以直接提交这份代码，进行平台评测的体验。</p>
+<p>请注意：这份代码仅是 demo，因此仅测试了最简单的几个测例，并不与 Starry 的主线保持一致。</p>
+<p><strong>接下来是对适配原理的介绍，如果同学们对它感兴趣，可以继续阅读。这有助于大家将自己的内核适配到评测环境上。否则可以跳过本章节剩下的所有内容。</strong></p>
+<p>相关适配工作如下：</p>
+<h4 id="本地化依赖处理"><a class="header" href="#本地化依赖处理">本地化依赖处理</a></h4>
+<p>我们默认评测机无法访问外部网络，因此需要保证整个内核构建过程需要完全脱离网络进行。为此我们需要进行如下配置：</p>
+<ol>
+<li>
+<p>cargo 依赖本地化：通过执行 <code>cargo vendor</code> 基于当前的 <code>Cargo.lock</code> 文件预先将所有需要的依赖文件下载到本地的 <a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/main/vendor">vendor</a> 文件夹下。当指令执行完成之后，会在终端输出一系列 patch 信息，如下。</p>
+<pre><code class="language-toml">[source.crates-io]
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/Azure-stars/lwext4_rust.git"]
+git = "https://github.com/Azure-stars/lwext4_rust.git"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/arceos-org/allocator.git?tag=v0.1.1"]
+git = "https://github.com/arceos-org/allocator.git"
+tag = "v0.1.1"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/arceos-org/axdriver_crates.git?tag=v0.1.0"]
+git = "https://github.com/arceos-org/axdriver_crates.git"
+tag = "v0.1.0"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/arceos-org/linked_list.git?tag=v0.1.0"]
+git = "https://github.com/arceos-org/linked_list.git"
+tag = "v0.1.0"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/arceos-org/scheduler.git?tag=v0.1.0"]
+git = "https://github.com/arceos-org/scheduler.git"
+tag = "v0.1.0"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/jasonwhite/syscalls.git?rev=92624de"]
+git = "https://github.com/jasonwhite/syscalls.git"
+rev = "92624de"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/rafalh/rust-fatfs?rev=85f06e0"]
+git = "https://github.com/rafalh/rust-fatfs"
+rev = "85f06e0"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/rcore-os/smoltcp.git?rev=2ade274"]
+git = "https://github.com/rcore-os/smoltcp.git"
+rev = "2ade274"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/yfblock/page_table_multiarch.git?rev=c8a13b0"]
+git = "https://github.com/yfblock/page_table_multiarch.git"
+rev = "c8a13b0"
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+</code></pre>
+<p>我们需要将这部分的 patch 信息添加到 <code>.cargo/config.toml</code>中，用于指示 cargo 在构建时利用本地 vendor 文件夹进行构建，而不再需要通过 cargo cache 或云端下载。相关文档详见<a href="https://doc.rust-lang.org/cargo/reference/source-replacement.html#configuration">Configuration</a>。</p>
+</li>
+<li>
+<p>使用评测环境指定的工具链：我们需要指定构建工具链为评测镜像中提供的工具链，从而避免下载新的工具链导致的构建超时问题。</p>
+<p>目前镜像中的工具链为 <code>nightly-2024-02-03</code>与<code>nightly-2025-01-18</code>两类，分别需要 rust edition 2021 和 rust editon 2024。截止该文档撰写时，Starry 尚未迁移到 rust edition 2024，因此先适配 <code>nightly-2024-02-03</code>工具链版本。之后我们会将 Starry 迁移到 edition 2024。</p>
+<p>rustup 在构建时若未显式指定当前的 toolchain，会自动尝试去同步最新的工具链，出现如下输出，从而导致构建超时。</p>
+<pre><code class="language-shell">$ info: syncing channel updates for 'nightly-2024-02-03-x86_64-unknown-linux-gnu'   
+</code></pre>
+<p>为了解决工具链问题，我们需要手动指定工具链，相关文档详见 <a href="https://rust-lang.github.io/rustup/overrides.html">Override</a>。我们选择手动指定 <code>RUSTUP_TOOLCHAIN</code> 环境变量。因此我们在 Makefile 做了如下设置：</p>
+<pre><code class="language-makefile">all:
+	RUSTUP_TOOLCHAIN=nightly-2025-01-18 $(MAKE) test_build ARCH=riscv64 AX_TESTCASE=oscomp BUS=mmio  FEATURES=lwext4_rs 
+	...
+	RUSTUP_TOOLCHAIN=nightly-2025-01-18 $(MAKE) test_build ARCH=loongarch64 AX_TESTCASE=oscomp FEATURES=lwext4_rs
+
+</code></pre>
+</li>
+</ol>
+<h4 id="隐藏目录处理"><a class="header" href="#隐藏目录处理">隐藏目录处理</a></h4>
+<p>隐藏目录的处理在 starry-next 中包括两个部分：<code>.cargo</code>与<code>.arceos</code>处理</p>
+<ul>
+<li>
+<p><code>.cargo</code>处理：在 starry-next 中需要指定依赖的 patch 信息（包括 arceos 基座和 vendor 信息），这些需要配置在 <code>.cargo/config.toml</code>中。在 starry-next 中，我们通过如下方式构造<code>.cargo/config.toml</code></p>
+<ul>
+<li>在<code>./scripts/config.toml.temp</code>中书写 <code>config.toml</code>所需要的内容</li>
+<li>执行<code>./scripts/set_ax_root.sh</code>创建<code>.cargo</code>目录并写入<code>config.toml</code></li>
+</ul>
+<p>因此我们提交的内容本就不包括<code>.cargo</code>文件夹，无需额外处理，只需要维护好<code>config.toml.temp</code>即可。</p>
+<p><strong>NOTES</strong>：在<a href="ch03-02.html#%E6%9C%AC%E5%9C%B0%E5%8C%96%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86">本地化依赖处理</a> 中要求将 vendor 信息加入到 <code>config.toml</code>，在 Starry 中应当是加入到 <code>./scripts/config.toml.temp</code>中，详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/config.toml.temp#L12">config.toml.temp</a>。</p>
+</li>
+<li>
+<p><code>.arceos</code>处理：Starry 并不是一个完整的内核，而是一个<strong>内核插件</strong>，需要在构建时拉取 arceos 仓库作为内核基座，完成整个系统的构建（关于两者的关系和运行原理详见<a href="./ch02-00.html">Starry概述</a>）。由于我们默认评测机无法访问外部网络，且无法识别隐藏文件，因此需要做出如下适配。</p>
+<ol>
+<li>
+<p>直接将 arceos 的相关代码拉取到项目文件夹中，作为项目的一部分进行提交，而不再是通过 <code>.scripts/get_deps.sh</code>进行拉取。相关代码详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/main/arceos">arceos</a>。</p>
+<blockquote>
+<p>在将来可以为这一步写一个自动化脚本，每次提交时自动同步对应的 arceos 代码到根目录下</p>
+</blockquote>
+</li>
+<li>
+<p>原来默认的内核基座目录是 <code>.arceos</code>，需要改为非隐藏目录，因此需要对项目构建时的 <code>AX_ROOT</code> 变量进行修改，从 <code>.arceos</code>修改为<code>arceos</code>，相关修改详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/86ad0fa17b0edd9fd5bba082a58d666a100b7897/Makefile">Makefile</a>和<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/get_deps.sh#L3">get_deps.sh</a>。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="安装必要依赖-1"><a class="header" href="#安装必要依赖-1">安装必要依赖</a></h4>
+<p>ArceOS 构造过程需要<code>axconfig-gen</code>依赖，该包需要由<code>cargo install</code> 下载，我们需要将其下载到本地。在赛事使用的 docker 中需要将 <code>axconfig-gen</code> 的可执行文件拷贝到环境变量中，因此有如下操作。</p>
+<pre><code class="language-shell"># 在本地项目根目录下安装该依赖
+$ cargo install --root . axconfig-gen
+
+# 下载完毕之后，会在根目录下生成 bin/axconfig-gen
+
+# 在 赛事 docker 中需要将可执行文件加入到环境变量，详见 Makefile 的 test_build 目标
+$ cp bin/* ${CARGO_BIN_PATH}
+</code></pre>
+<h4 id="总结"><a class="header" href="#总结">总结</a></h4>
+<p>为了适配评测环境，需要做出如下改动：</p>
+<ol>
+<li>cargo vendor 并添加 patch 信息到 <code>config.toml.temp</code>（注意不是<code>.cargo/config.toml</code>，相关原因见<a href="ch03-02.html#%E9%9A%90%E8%97%8F%E7%9B%AE%E5%BD%95%E5%A4%84%E7%90%86">隐藏目录</a>)</li>
+<li>用环境变量<code>RUSTUP_TOOLCHAIN</code>显式指定评测所需的工具链</li>
+<li>将 arceos 代码直接作为项目下文件夹一并提交，而不再是远程下载</li>
+<li>修改 <code>AX_ROOT</code> 变量为 <code>arceos</code></li>
+<li>安装依赖并拷贝到环境变量中</li>
+</ol>
+<p>对应的可评测代码为 <a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/pre2025test">starry-next-gitlab</a>。</p>
+<h4 id="docker-模拟赛事评测环境"><a class="header" href="#docker-模拟赛事评测环境">Docker 模拟赛事评测环境</a></h4>
+<p>我们可以使用 Docker 来模拟赛事的评测环境，从而在本地判断环境配置是否有问题。</p>
+<p>在项目仓库目录下执行如下指令：</p>
+<pre><code class="language-shell">$ docker pull docker.educg.net/cg/os-contest:20250226
+
+$ docker run --rm --privileged -w /work -v $(pwd):/work docker.educg.net/cg/os-contest:20250226 bin/bash
+
+# 在 docker 中
+$ make all
+</code></pre>
+<p>执行完上述指令之后，会在项目根目录下生成 kernel-la 和 kernel-rv 两个文件。接下来在 docker 分别执行如下两个指令</p>
+<pre><code class="language-shell">$ qemu-system-riscv64 -machine virt -kernel ./kernel-rv -m 2G -nographic -smp 2 -bios default -drive file=sdcard-rv.img,if=none,format=raw,id=x0 \
+                    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0 -no-reboot -device virtio-net-device,netdev=net -netdev user,id=net \
+                    -rtc base=utc
+
+$ qemu-system-loongarch64 -m 1G -smp 1 -kernel ./kernel-la -device virtio-blk-pci,drive=disk0 -drive id=disk0,if=none,format=raw,file=sdcard-la.img -no-reboot -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::5555-:5555,hostfwd=udp::5555-:5555 -nographic 
+</code></pre>
+<p>即可在 Docker 中运行赛事测例。</p>
+<p>当完成了上述测试，即可将本地代码提交到仓库，并按照上述流程在赛事平台上测试。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="接入不同的驱动"><a class="header" href="#接入不同的驱动">接入不同的驱动</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="运行更多复杂应用"><a class="header" href="#运行更多复杂应用">运行更多复杂应用</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-原理介绍"><a class="header" href="#starry-原理介绍">Starry 原理介绍</a></h1>
+<ul>
+<li><a href="ch04-01.html">架构设计图</a></li>
+<li><a href="ch04-02.html">启动与初始化</a></li>
+<li><a href="ch04-03.html">任务调度</a>
+<ul>
+<li><a href="ch04-03-01.html">任务调度接口</a></li>
+<li><a href="ch04-03-02.html">多核调度的实现</a></li>
+</ul>
+</li>
+<li><a href="ch04-04.html">驱动兼容层</a>
+<ul>
+<li><a href="ch04-04-01.html">blk 设备</a></li>
+<li><a href="ch04-04-02.html">net 设备</a></li>
+<li><a href="ch04-04-03.html">display 设备</a></li>
+<li><a href="ch04-04-04.html">动态选择驱动</a></li>
+</ul>
+</li>
+<li><a href="ch04-05.html">文件系统</a>
+<ul>
+<li><a href="ch04-05-01.html">文件系统接口</a></li>
+<li><a href="ch04-05-02.html">适配不同文件系统</a></li>
+</ul>
+</li>
+<li><a href="ch04-06.html">网络协议栈</a>
+<ul>
+<li><a href="ch04-06-01.html">网络协议栈接口</a></li>
+<li><a href="ch04-06-02.html">适配不同网络协议栈</a></li>
+</ul>
+</li>
+<li><a href="ch04-07.html">宏内核扩展与系统调用</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="架构设计"><a class="header" href="#架构设计">架构设计</a></h1>
+<p>本章节简要介绍组件化系统 ArceOS 中不同模块的功能与接口文档。</p>
+<h2 id="arceos"><a class="header" href="#arceos">ArceOS</a></h2>
+<p>基座内核 ArceOS 以组件化内核的思想进行设计，设计架构图如下：</p>
+<p><img src="./assets/arceos.png" alt="" /></p>
+<p>每一个模块的简要介绍如下：</p>
+<ul>
+<li>
+<p>crates layer: 内核无关组件，如 <code>page_table</code>, <code>slab_allocator</code>, <code>spinlock</code> 等，可以方便地给其他内核进行复用</p>
+</li>
+<li>
+<p>modules layer: 内核相关的组件。他们与内核的核心功能相关，不容易解耦出来给其他内核使用，但是对内核本身的功能以及重构有重要作用。</p>
+<ul>
+<li>axalloc: 用于内核内存分配的模块</li>
+<li>axfs: 文件系统管理模块, 接入了 fat32</li>
+<li>axhal: 硬件抽象层模块</li>
+<li>axnet: 网络管理模块，接入了 smoltcp 网络协议栈</li>
+<li>axdriver: 驱动管理模块</li>
+<li>axtask: 任务管理模块，包括任务单元的定义和调度功能的实现</li>
+<li>axsync: 同步原语模块，包括一些 mutex 等同步原语等实现</li>
+<li>axmm: 地址空间管理模块，包括内存映射等功能的实现</li>
+</ul>
+</li>
+<li>
+<p>axfeat: feature 描述层，用于进行 feature 的定制和转发，从而实现组件定制化的功能</p>
+<ul>
+<li>feature 是 rust 条件编译的重要环节，详见<a href="https://doc.rust-lang.org/cargo/reference/features.html">文档</a></li>
+</ul>
+</li>
+<li>
+<p>api layer: ArceOS 对外提供的接口层</p>
+<ul>
+<li>arceos_posix_api: POSIX 接口兼容实现层，在初始时是调用了 Unikernel 的接口，在 Starry 中会为其加入更多宏内核的支持</li>
+<li>arceos_api: Unikernel 自身提供的接口层，用于其他应用程序调用内核的功能</li>
+</ul>
+</li>
+<li>
+<p>ulib layer: 用户库层，将 api layer 的接口进一步封装为更加兼容、常见的接口</p>
+<ul>
+<li>axstd: rust std 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 std 接口</li>
+<li>axlibc: libc 的 Unikernel 实现，它调用的是 arceos 的功能，但是提供了更加常见的 libc 接口</li>
+</ul>
+</li>
+<li>
+<p>user layer: 用户层，包括用户程序和用户程序的测试用例</p>
+<ul>
+<li>rust app: rust 语言编写的用户程序，调用 axstd 从而调用 Unikernel 内核的功能</li>
+<li>c app: c 语言编写的用户程序，与 axlibc 链接从而调用 Unikernel 内核的功能</li>
+</ul>
+</li>
+</ul>
+<p>关于 ArceOS 的接口更加详细的说明文档位于：<a href="https://arceos.org/arceos/">arceos</a></p>
+<p>其他相关材料包括：</p>
+<ul>
+<li>Unikernel 架构说明： https://dl.acm.org/doi/10.1145/2490301.2451167</li>
+<li>ArceOS 指导书 https://rcore-os.cn/arceos-tutorial-book/index.html</li>
+<li>ArceOS 教学视频：https://opencamp.cn/os2edu/camp/2024fall/stage/3</li>
+</ul>
+<h2 id="starry"><a class="header" href="#starry">Starry</a></h2>
+<p>Starry 的目录结构 TODO</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-启用与运行"><a class="header" href="#starry-启用与运行">Starry 启用与运行</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-宏内核扩展"><a class="header" href="#starry-宏内核扩展">Starry 宏内核扩展</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="任务调度接口"><a class="header" href="#任务调度接口">任务调度接口</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="多核调度的实现"><a class="header" href="#多核调度的实现">多核调度的实现</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-系统调用"><a class="header" href="#starry-系统调用">Starry 系统调用</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="blk-设备"><a class="header" href="#blk-设备">blk 设备</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="net-设备"><a class="header" href="#net-设备">net 设备</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="display-设备"><a class="header" href="#display-设备">display 设备</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="动态选择驱动"><a class="header" href="#动态选择驱动">动态选择驱动</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="系统调用"><a class="header" href="#系统调用">系统调用</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="文件系统接口"><a class="header" href="#文件系统接口">文件系统接口</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="适配不同文件系统"><a class="header" href="#适配不同文件系统">适配不同文件系统</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="网络协议栈"><a class="header" href="#网络协议栈">网络协议栈</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="网络协议栈接口"><a class="header" href="#网络协议栈接口">网络协议栈接口</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="适配不同网络协议栈"><a class="header" href="#适配不同网络协议栈">适配不同网络协议栈</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="宏内核扩展与系统调用"><a class="header" href="#宏内核扩展与系统调用">宏内核扩展与系统调用</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="starry-开发规划"><a class="header" href="#starry-开发规划">Starry 开发规划</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="附录利用-qemu-linux-user-运行和调试程序"><a class="header" href="#附录利用-qemu-linux-user-运行和调试程序">附录：利用 qemu-linux-user 运行和调试程序</a></h1>
+<p>本章节简要介绍怎么利用 <code>qemu-linux-user</code> 运行和调试不同架构的 <code>linux</code> 程序。</p>
+<h2 id="环境安装"><a class="header" href="#环境安装">环境安装</a></h2>
+<p>在<a href="ch02-01.html">实验环境配置</a>中<a href="ch02-01.html#%E5%AE%89%E8%A3%85qemu">安装 QEMU</a>的部分已经指出了安装 qemu 所需要的工具，请确保您在安装 qemu 的时候也安装了对应架构的 <code>linux-user</code>，例如 <code>riscv64-linux-user</code>。</p>
+<h2 id="使用方式"><a class="header" href="#使用方式">使用方式</a></h2>
+<p>可以直接使用 <code>qemu-riscv64</code> 运行 <code>riscv64</code> 架构的应用程序，如果需要使用类似 <code>strace</code> 的功能，可以使用指令：</p>
+<pre><code class="language-shell">qemu-riscv64 -strace command
+</code></pre>
+<p><code>command</code> 为需要运行的指令，例如在当下文件夹找到 <code>busybox</code> 并运行对应的指令。</p>
+<pre><code class="language-shell">qemu-riscv64 -strace ./busybox ls
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
