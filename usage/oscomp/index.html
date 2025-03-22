@@ -1475,7 +1475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../implementation/network/stack.md" class="md-nav__link">
+      <a href="../../implementation/network/api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2300,7 +2300,7 @@ gunzip<span class="w"> </span>sdcard-riscv64.img.gz
 gunzip<span class="w"> </span>sdcard-x86_64.img.gz
 </code></pre></div></td></tr></table></div>
 <h3 id="_3">准备开发环境<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>请参考 <a href="./ch02-01.md"><strong>实验环境配置</strong></a> 完成开发环境的配置。</p>
+<p>请参考 <a href="../../setup/env/"><strong>实验环境配置</strong></a> 完成开发环境的配置。</p>
 <p>另外也可以执行如下指令拉取赛事评测环境镜像并且启动容器（和本地环境二者选其一即可）</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
@@ -2574,11 +2574,11 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
 <p>因此我们提交的内容本就不包括<code>.cargo</code>文件夹，无需额外处理，只需要维护好<code>config.toml.temp</code>即可。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>在<a href="#本地化依赖处理">本地化依赖处理</a> 中要求将 vendor 信息加入到 <code>config.toml</code>，在 Starry 中应当是加入到 <code>./scripts/config.toml.temp</code>中，详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/config.toml.temp#L12">config.toml.temp</a>。</p>
+<p>在<a href="#_8">本地化依赖处理</a> 中要求将 vendor 信息加入到 <code>config.toml</code>，在 Starry 中应当是加入到 <code>./scripts/config.toml.temp</code>中，详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/config.toml.temp#L12">config.toml.temp</a>。</p>
 </div>
 </li>
 <li>
-<p><code>.arceos</code>处理：Starry 并不是一个完整的内核，而是一个<strong>内核插件</strong>，需要在构建时拉取 arceos 仓库作为内核基座，完成整个系统的构建（关于两者的关系和运行原理详见<a href="./ch02-00.md">Starry概述</a>）。由于我们默认评测机无法访问外部网络，且无法识别隐藏文件，因此需要做出如下适配。</p>
+<p><code>.arceos</code>处理：Starry 并不是一个完整的内核，而是一个<strong>内核插件</strong>，需要在构建时拉取 arceos 仓库作为内核基座，完成整个系统的构建。由于我们默认评测机无法访问外部网络，且无法识别隐藏文件，因此需要做出如下适配。</p>
 <ol>
 <li>
 <p>直接将 arceos 的相关代码拉取到项目文件夹中，作为项目的一部分进行提交，而不再是通过 <code>.scripts/get_deps.sh</code>进行拉取。相关代码详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/main/arceos">arceos</a>。</p>
@@ -2612,7 +2612,7 @@ cp<span class="w"> </span>bin/*<span class="w"> </span><span class="si">${</span
 <h4 id="_11">总结<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
 <p>为了适配评测环境，需要做出如下改动：</p>
 <ol>
-<li>cargo vendor 并添加 patch 信息到 <code>config.toml.temp</code>（注意不是<code>.cargo/config.toml</code>，相关原因见<a href="#隐藏目录处理">隐藏目录</a>)</li>
+<li>cargo vendor 并添加 patch 信息到 <code>config.toml.temp</code>（注意不是<code>.cargo/config.toml</code>，相关原因见<a href="#_9">隐藏目录</a></li>
 <li>用环境变量<code>RUSTUP_TOOLCHAIN</code>显式指定评测所需的工具链</li>
 <li>将 arceos 代码直接作为项目下文件夹一并提交，而不再是远程下载</li>
 <li>修改 <code>AX_ROOT</code> 变量为 <code>arceos</code></li>
@@ -2666,7 +2666,7 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 10:41:20">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 10:58:39">2025年3月22日</span>
   </span>
 
     
