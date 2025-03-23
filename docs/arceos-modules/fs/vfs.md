@@ -4,8 +4,6 @@
 
 `axfs_vfs` 是 `ArceOS` 使用的虚拟文件操作系统接口。
 
-A file system needs to implement the VfsOps trait, its files and directories need to implement the VfsNodeOps trait.
-
 上层的文件系统需要实现 `trait VfsOps`，其文件和目录需要实现 `trait VfsNodeOps`。
 
 详见 https://docs.rs/axfs_vfs/latest/axfs_vfs/
