@@ -1902,6 +1902,18 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    内存管理机制
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1912,6 +1924,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      核心数据结构
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linear-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      线性映射（Linear Mapping）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazy-alloc" class="md-nav__link">
+    <span class="md-ellipsis">
+      延迟分配（Lazy Alloc）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      延迟分配的实现细节
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="延迟分配的实现细节">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      页面错误处理
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2475,6 +2557,65 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      核心数据结构
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linear-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      线性映射（Linear Mapping）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazy-alloc" class="md-nav__link">
+    <span class="md-ellipsis">
+      延迟分配（Lazy Alloc）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      延迟分配的实现细节
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="延迟分配的实现细节">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      页面错误处理
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2495,6 +2636,138 @@
 
 <h1 id="_1">内存管理机制<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>描述如何实现内存管理，包括 linear、lazy alloc 等内容</p>
+<h2 id="_2">核心数据结构<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p><code>AddrSpace</code> 结构体是内存管理的核心，包含以下主要字段：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">AddrSpace</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">va_range</span><span class="p">:</span><span class="w"> </span><span class="nc">VirtAddrRange</span><span class="p">,</span>
+<span class="w">    </span><span class="n">areas</span><span class="p">:</span><span class="w"> </span><span class="nc">MemorySet</span><span class="o">&lt;</span><span class="n">Backend</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">pt</span><span class="p">:</span><span class="w"> </span><span class="nc">PageTable</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+- <code>va_range</code>：表示虚拟地址范围，定义了该地址空间的起始和结束地址。
+- <code>areas</code>：管理多个内存区域，每个区域有不同的属性和映射方式。
+- <code>pt</code>：页表，负责将虚拟地址映射到物理地址。</p>
+<h2 id="linear-mapping">线性映射（Linear Mapping）<a class="headerlink" href="#linear-mapping" title="Permanent link">&para;</a></h2>
+<p>线性映射是指虚拟地址和物理地址之间存在固定的偏移关系。在 <code>AddrSpace</code> 中，通过 <code>map_linear</code> 方法实现线性映射：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">map_linear</span><span class="p">(</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span>
+<span class="w">    </span><span class="n">start_vaddr</span><span class="p">:</span><span class="w"> </span><span class="nc">VirtAddr</span><span class="p">,</span>
+<span class="w">    </span><span class="n">start_paddr</span><span class="p">:</span><span class="w"> </span><span class="nc">PhysAddr</span><span class="p">,</span>
+<span class="w">    </span><span class="n">size</span><span class="p">:</span><span class="w"> </span><span class="kt">usize</span><span class="p">,</span>
+<span class="w">    </span><span class="n">flags</span><span class="p">:</span><span class="w"> </span><span class="nc">MappingFlags</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">AxResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="bp">self</span><span class="p">.</span><span class="n">validate_region</span><span class="p">(</span><span class="n">start_vaddr</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="n">start_paddr</span><span class="p">.</span><span class="n">is_aligned_4k</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ax_err</span><span class="o">!</span><span class="p">(</span><span class="n">InvalidInput</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;address not aligned&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start_vaddr</span><span class="p">.</span><span class="n">as_usize</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_paddr</span><span class="p">.</span><span class="n">as_usize</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MemoryArea</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">start_vaddr</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">Backend</span><span class="p">::</span><span class="n">new_linear</span><span class="p">(</span><span class="n">offset</span><span class="p">));</span>
+<span class="w">    </span><span class="bp">self</span><span class="p">.</span><span class="n">areas</span>
+<span class="w">        </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">area</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">pt</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">map_err</span><span class="p">(</span><span class="n">mapping_err_to_ax_err</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+- <strong>步骤</strong>：
+  1. <strong>验证地址范围</strong>：确保起始虚拟地址和大小在地址空间范围内，且地址对齐。
+  2. <strong>计算偏移量</strong>：计算虚拟地址和物理地址之间的固定偏移量。
+  3. <strong>创建内存区域</strong>：使用 <code>MemoryArea::new</code> 创建一个新的内存区域，并指定线性映射的后端 <code>Backend::new_linear(offset)</code>。
+  4. <strong>映射内存区域</strong>：调用 <code>MemorySet</code> 的 <code>map</code> 方法将内存区域映射到页表中。</p>
+<h2 id="lazy-alloc">延迟分配（Lazy Alloc）<a class="headerlink" href="#lazy-alloc" title="Permanent link">&para;</a></h2>
+<p>延迟分配是指在实际访问内存时才进行物理内存的分配。在 <code>AddrSpace</code> 中，通过 <code>map_alloc</code> 方法实现延迟分配：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">map_alloc</span><span class="p">(</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span>
+<span class="w">    </span><span class="n">start</span><span class="p">:</span><span class="w"> </span><span class="nc">VirtAddr</span><span class="p">,</span>
+<span class="w">    </span><span class="n">size</span><span class="p">:</span><span class="w"> </span><span class="kt">usize</span><span class="p">,</span>
+<span class="w">    </span><span class="n">flags</span><span class="p">:</span><span class="w"> </span><span class="nc">MappingFlags</span><span class="p">,</span>
+<span class="w">    </span><span class="n">populate</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">AxResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="bp">self</span><span class="p">.</span><span class="n">validate_region</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MemoryArea</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">Backend</span><span class="p">::</span><span class="n">new_alloc</span><span class="p">(</span><span class="n">populate</span><span class="p">));</span>
+<span class="w">    </span><span class="bp">self</span><span class="p">.</span><span class="n">areas</span>
+<span class="w">        </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">area</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">pt</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">map_err</span><span class="p">(</span><span class="n">mapping_err_to_ax_err</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+- <strong>步骤</strong>：
+  1. <strong>验证地址范围</strong>：确保起始虚拟地址和大小在地址空间范围内，且地址对齐。
+  2. <strong>创建内存区域</strong>：使用 <code>MemoryArea::new</code> 创建一个新的内存区域，并指定延迟分配的后端 <code>Backend::new_alloc(populate)</code>。
+  3. <strong>映射内存区域</strong>：调用 <code>MemorySet</code> 的 <code>map</code> 方法将内存区域映射到页表中。</p>
+<h2 id="_3">延迟分配的实现细节<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">页面错误处理<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>当访问未映射的页面时，会触发页面错误。<code>AddrSpace</code> 通过 <code>handle_page_fault</code> 方法处理页面错误：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">handle_page_fault</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">vaddr</span><span class="p">:</span><span class="w"> </span><span class="nc">VirtAddr</span><span class="p">,</span><span class="w"> </span><span class="n">access_flags</span><span class="p">:</span><span class="w"> </span><span class="nc">MappingFlags</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="bp">self</span><span class="p">.</span><span class="n">va_range</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">vaddr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">area</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">areas</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">vaddr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">orig_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">area</span><span class="p">.</span><span class="n">flags</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">orig_flags</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">access_flags</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">area</span>
+<span class="w">               </span><span class="p">.</span><span class="n">backend</span><span class="p">()</span>
+<span class="w">               </span><span class="p">.</span><span class="n">handle_page_fault</span><span class="p">(</span><span class="n">vaddr</span><span class="p">,</span><span class="w"> </span><span class="n">orig_flags</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">pt</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+- <strong>步骤</strong>：
+  1. <strong>检查地址范围</strong>：确保虚拟地址在地址空间范围内。
+  2. <strong>查找内存区域</strong>：查找包含该虚拟地址的内存区域。
+  3. <strong>检查访问权限</strong>：检查访问权限是否合法。
+  4. <strong>处理页面错误</strong>：调用内存区域后端的 <code>handle_page_fault</code> 方法处理页面错误。</p>
 
 
 
@@ -2515,7 +2788,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 12:56:41">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月24日 12:44:15">2025年3月24日</span>
   </span>
 
     
@@ -2526,12 +2799,13 @@
   <span class="md-source-file__fact">
     <span class="md-icon" title="贡献者">
       
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M5 8c.56 0 1.08.15 1.53.42-.15 1.43.27 2.85 1.13 3.96C7.16 13.34 6.16 14 5 14a3 3 0 0 1-3-3 3 3 0 0 1 3-3m14 0a3 3 0 0 1 3 3 3 3 0 0 1-3 3c-1.16 0-2.16-.66-2.66-1.62a5.54 5.54 0 0 0 1.13-3.96c.45-.27.97-.42 1.53-.42M5.5 18.25c0-2.07 2.91-3.75 6.5-3.75s6.5 1.68 6.5 3.75V20h-13zM0 20v-1.5c0-1.39 1.89-2.56 4.45-2.9-.59.68-.95 1.62-.95 2.65V20zm24 0h-3.5v-1.75c0-1.03-.36-1.97-.95-2.65 2.56.34 4.45 1.51 4.45 2.9z"/></svg>
       
     </span>
     <nav>
       
-        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
+        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>, 
+        <a href="mailto:chenyihu21@mails.tsinghua.edu.cn">cyh21</a>
     </nav>
   </span>
 
@@ -2583,7 +2857,7 @@
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a> (3.19%), <a href='mailto:chenyihu21@mails.tsinghua.edu.cn'>cyh21</a> (96.81%)</span>
             </small>
         </div>
     
