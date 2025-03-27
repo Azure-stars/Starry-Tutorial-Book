@@ -1547,6 +1547,18 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    调度机制实现
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1557,6 +1569,94 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 调度算法选择
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 任务状态管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 调度核心逻辑
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 调度核心逻辑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 任务添加
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 任务唤醒
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 任务切换
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 定时器处理
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2475,6 +2575,83 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 调度算法选择
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 任务状态管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 调度核心逻辑
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 调度核心逻辑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 任务添加
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 任务唤醒
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 任务切换
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 定时器处理
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2494,6 +2671,165 @@
 
 
 <h1 id="_1">任务调度机制<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h4 id="1">1. 调度算法选择<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p>通过 Cargo 特性选择不同的调度算法，如 sched_fifo、sched_cfs 和 sched_rr。不同的调度算法在任务调度时采用不同的策略，例如：<br />
+* FIFO：按照任务到达的顺序依次执行，直到任务完成或阻塞。
+* RR：每个任务被分配一个固定的时间片，当时间片用完后，任务被暂停，下一个任务开始执行。
+* CFS：通过计算每个任务的虚拟运行时间，优先选择虚拟运行时间最短的任务执行，以保证公平性。</p>
+<h4 id="2">2. 任务状态管理<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>任务有四种状态：Running、Ready、Blocked和Exited，定义在arceos/modules/axtask/src/task.rs中，通过 put_task_with_state 函数实现任务状态的转换和任务的插入操作：<br />
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#[repr(u8)]</span>
+<span class="cp">#[derive(Debug, Clone, Copy, Eq, PartialEq)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">TaskState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Blocked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Exited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+Running：任务正在 CPU 上执行；<br />
+Ready：任务已经准备好执行，等待调度器分配 CPU 时间；<br />
+Blocked：任务因为某些原因（如等待 I/O、等待锁等）被阻塞，暂时不能执行；<br />
+Exited：任务已经执行完毕，等待资源回收。  </p>
+<h4 id="3">3. 调度核心逻辑<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<p>调度的核心逻辑在arceos/modules/axtask/src/run_queue.rs的AxRunQueue结构体中实现，主要包括任务添加、任务唤醒、任务切换等操作。  </p>
+<h5 id="31">3.1 任务添加<a class="headerlink" href="#31" title="Permanent link">&para;</a></h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">impl</span><span class="o">&lt;</span><span class="n">G</span><span class="p">:</span><span class="w"> </span><span class="nc">BaseGuard</span><span class="o">&gt;</span><span class="w"> </span><span class="n">AxRunQueueRef</span><span class="o">&lt;&#39;</span><span class="nb">_</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">add_task</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">task</span><span class="p">:</span><span class="w"> </span><span class="nc">AxTaskRef</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">debug</span><span class="o">!</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;task add: {} on run_queue {}&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">task</span><span class="p">.</span><span class="n">id_name</span><span class="p">(),</span>
+<span class="w">            </span><span class="bp">self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">cpu_id</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">        </span><span class="fm">assert!</span><span class="p">(</span><span class="n">task</span><span class="p">.</span><span class="n">is_ready</span><span class="p">());</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">scheduler</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">add_task</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：将一个就绪状态的任务添加到调度器的就绪队列中。  </p>
+<h5 id="32">3.2 任务唤醒<a class="headerlink" href="#32" title="Permanent link">&para;</a></h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">impl</span><span class="o">&lt;</span><span class="n">G</span><span class="p">:</span><span class="w"> </span><span class="nc">BaseGuard</span><span class="o">&gt;</span><span class="w"> </span><span class="n">AxRunQueueRef</span><span class="o">&lt;&#39;</span><span class="nb">_</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">unblock_task</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">task</span><span class="p">:</span><span class="w"> </span><span class="nc">AxTaskRef</span><span class="p">,</span><span class="w"> </span><span class="n">resched</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">task_id_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">task</span><span class="p">.</span><span class="n">id_name</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">            </span><span class="p">.</span><span class="n">inner</span>
+<span class="w">            </span><span class="p">.</span><span class="n">put_task_with_state</span><span class="p">(</span><span class="n">task</span><span class="p">,</span><span class="w"> </span><span class="n">TaskState</span><span class="p">::</span><span class="n">Blocked</span><span class="p">,</span><span class="w"> </span><span class="n">resched</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">cpu_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">cpu_id</span><span class="p">;</span>
+<span class="w">            </span><span class="n">debug</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;task unblock: {} on run_queue {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">task_id_name</span><span class="p">,</span><span class="w"> </span><span class="n">cpu_id</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">resched</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cpu_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">this_cpu_id</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="cp">#[cfg(feature = </span><span class="s">&quot;preempt&quot;</span><span class="cp">)]</span>
+<span class="w">                </span><span class="k">crate</span><span class="p">::</span><span class="n">current</span><span class="p">().</span><span class="n">set_preempt_pending</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：将一个阻塞状态的任务唤醒，使其进入就绪状态，并根据需要设置抢占标志。  </p>
+<h5 id="33">3.3 任务切换<a class="headerlink" href="#33" title="Permanent link">&para;</a></h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">impl</span><span class="w"> </span><span class="n">AxRunQueue</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">resched</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span>
+<span class="w">            </span><span class="p">.</span><span class="n">scheduler</span>
+<span class="w">            </span><span class="p">.</span><span class="n">lock</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="n">pick_next_task</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="n">unwrap_or_else</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">IDLE_TASK</span><span class="p">.</span><span class="n">current_ref_raw</span><span class="p">().</span><span class="n">get_unchecked</span><span class="p">().</span><span class="n">clone</span><span class="p">()</span>
+<span class="w">            </span><span class="p">});</span>
+<span class="w">        </span><span class="fm">assert!</span><span class="p">(</span>
+<span class="w">            </span><span class="n">next</span><span class="p">.</span><span class="n">is_ready</span><span class="p">(),</span>
+<span class="w">            </span><span class="s">&quot;next {} is not ready: {:?}&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">next</span><span class="p">.</span><span class="n">id_name</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">next</span><span class="p">.</span><span class="n">state</span><span class="p">()</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">switch_to</span><span class="p">(</span><span class="k">crate</span><span class="p">::</span><span class="n">current</span><span class="p">(),</span><span class="w"> </span><span class="n">next</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">switch_to</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">prev_task</span><span class="p">:</span><span class="w"> </span><span class="nc">CurrentTask</span><span class="p">,</span><span class="w"> </span><span class="n">next_task</span><span class="p">:</span><span class="w"> </span><span class="nc">AxTaskRef</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// 任务切换逻辑</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：resched方法选择下一个要执行的任务，并调用switch_to方法进行任务切换。</p>
+<h4 id="4">4. 定时器处理<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<p>如果启用了 irq 特性，任务调度模块会处理定时器事件。在 on_timer_tick 函数中，会检查定时器事件并更新调度器状态：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="sd">/// Handles periodic timer ticks for the task manager.</span>
+<span class="sd">///</span>
+<span class="sd">/// For example, advance scheduler states, checks timed events, etc.</span>
+<span class="cp">#[cfg(feature = </span><span class="s">&quot;irq&quot;</span><span class="cp">)]</span>
+<span class="cp">#[doc(cfg(feature = </span><span class="s">&quot;irq&quot;</span><span class="cp">))]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">on_timer_tick</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">kernel_guard</span><span class="p">::</span><span class="n">NoOp</span><span class="p">;</span>
+<span class="w">    </span><span class="k">crate</span><span class="p">::</span><span class="n">timers</span><span class="p">::</span><span class="n">check_events</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Since irq and preemption are both disabled here,</span>
+<span class="w">    </span><span class="c1">// we can get current run queue with the default `kernel_guard::NoOp`.</span>
+<span class="w">    </span><span class="n">current_run_queue</span><span class="p">::</span><span class="o">&lt;</span><span class="n">NoOp</span><span class="o">&gt;</span><span class="p">().</span><span class="n">scheduler_timer_tick</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
 
 
 
@@ -2514,7 +2850,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 12:56:41">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月23日 15:25:36">2025年3月23日</span>
   </span>
 
     
@@ -2525,12 +2861,13 @@
   <span class="md-source-file__fact">
     <span class="md-icon" title="贡献者">
       
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M5 8c.56 0 1.08.15 1.53.42-.15 1.43.27 2.85 1.13 3.96C7.16 13.34 6.16 14 5 14a3 3 0 0 1-3-3 3 3 0 0 1 3-3m14 0a3 3 0 0 1 3 3 3 3 0 0 1-3 3c-1.16 0-2.16-.66-2.66-1.62a5.54 5.54 0 0 0 1.13-3.96c.45-.27.97-.42 1.53-.42M5.5 18.25c0-2.07 2.91-3.75 6.5-3.75s6.5 1.68 6.5 3.75V20h-13zM0 20v-1.5c0-1.39 1.89-2.56 4.45-2.9-.59.68-.95 1.62-.95 2.65V20zm24 0h-3.5v-1.75c0-1.03-.36-1.97-.95-2.65 2.56.34 4.45 1.51 4.45 2.9z"/></svg>
       
     </span>
     <nav>
       
-        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
+        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>, 
+        <a href="mailto:yy-yu21@mails.tsinghua.edu.cn">piggy</a>
     </nav>
   </span>
 
@@ -2582,7 +2919,7 @@
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a> (1.87%), <a href='mailto:yy-yu21@mails.tsinghua.edu.cn'>piggy</a> (98.13%)</span>
             </small>
         </div>
     

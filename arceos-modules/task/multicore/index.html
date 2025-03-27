@@ -1569,6 +1569,18 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    多核调度支持
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1579,6 +1591,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 多核调度机制
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 特性配置
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 运行队列管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 任务分配
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 任务迁移
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2475,6 +2551,59 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 多核调度机制
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 特性配置
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 运行队列管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 任务分配
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 任务迁移
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2494,6 +2623,94 @@
 
 
 <h1 id="_1">多核调度机制实现<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h4 id="1">1. 多核调度机制<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p>ArceOS 支持多核调度，采用了 per-cpu run queue 机制。每个 CPU 都有自己的运行队列，任务可以在不同的 CPU 之间迁移。在 unblock_task 函数中，会根据 CPU ID 来判断是否需要重新调度：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="n">cpu_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">cpu_id</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="n">resched</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cpu_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">this_cpu_id</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cp">#[cfg(feature = </span><span class="s">&quot;preempt&quot;</span><span class="cp">)]</span>
+<span class="w">    </span><span class="k">crate</span><span class="p">::</span><span class="n">current</span><span class="p">().</span><span class="n">set_preempt_pending</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="2">2. 特性配置<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>通过 axtask 模块的特性配置，可以开启多核调度支持：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">smp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;kspin/smp&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+其中，kspin/smp 表示使用支持多核的自旋锁，确保在多核环境下的并发安全。</p>
+<h4 id="3">3. 运行队列管理<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<p>在多核系统中，每个 CPU 都有自己的运行队列AxRunQueue，通过percpu_static宏定义：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">percpu_static</span><span class="o">!</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">RUN_QUEUE</span><span class="p">:</span><span class="w"> </span><span class="nc">LazyInit</span><span class="o">&lt;</span><span class="n">AxRunQueue</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LazyInit</span><span class="p">::</span><span class="n">new</span><span class="p">(),</span>
+<span class="w">    </span><span class="c1">// 其他CPU相关的静态变量</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：每个 CPU 的运行队列独立管理该 CPU 上的任务，避免了多核之间的竞争。</p>
+<h4 id="4">4. 任务分配<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<p>select_run_queue函数根据任务的 CPU 亲和性和负载均衡算法选择合适的运行队列：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#[inline]</span>
+<span class="k">pub</span><span class="p">(</span><span class="k">crate</span><span class="p">)</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">select_run_queue</span><span class="o">&lt;</span><span class="n">G</span><span class="p">:</span><span class="w"> </span><span class="nc">BaseGuard</span><span class="o">&gt;</span><span class="p">(</span><span class="n">task</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">AxTaskRef</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">AxRunQueueRef</span><span class="o">&lt;&#39;</span><span class="nb">static</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">irq_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">G</span><span class="p">::</span><span class="n">acquire</span><span class="p">();</span>
+<span class="w">    </span><span class="cp">#[cfg(feature = </span><span class="s">&quot;smp&quot;</span><span class="cp">)]</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">select_run_queue_index</span><span class="p">(</span><span class="n">task</span><span class="p">.</span><span class="n">cpumask</span><span class="p">());</span>
+<span class="w">        </span><span class="n">AxRunQueueRef</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">inner</span><span class="p">:</span><span class="w"> </span><span class="nc">get_run_queue</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
+<span class="w">            </span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="nc">irq_state</span><span class="p">,</span>
+<span class="w">            </span><span class="n">_phantom</span><span class="p">:</span><span class="w"> </span><span class="nc">core</span><span class="p">::</span><span class="n">marker</span><span class="p">::</span><span class="n">PhantomData</span><span class="p">,</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cp">#[cfg(not(feature = </span><span class="s">&quot;smp&quot;</span><span class="cp">))]</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">AxRunQueueRef</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">inner</span><span class="p">:</span><span class="w"> </span><span class="nc">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">RUN_QUEUE</span><span class="p">.</span><span class="n">current_ref_mut_raw</span><span class="p">()</span><span class="w"> </span><span class="p">},</span>
+<span class="w">            </span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="nc">irq_state</span><span class="p">,</span>
+<span class="w">            </span><span class="n">_phantom</span><span class="p">:</span><span class="w"> </span><span class="nc">core</span><span class="p">::</span><span class="n">marker</span><span class="p">::</span><span class="n">PhantomData</span><span class="p">,</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：在多核系统中，根据任务的 CPU 亲和性和负载均衡算法选择合适的运行队列，将任务分配到相应的 CPU 上执行。</p>
+<h4 id="5">5. 任务迁移<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<p>当任务的 CPU 亲和性发生变化时，需要将任务迁移到合适的 CPU 上执行，通过migrate_current方法实现：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#[cfg(feature = </span><span class="s">&quot;smp&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">migrate_current</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">migration_task</span><span class="p">:</span><span class="w"> </span><span class="nc">AxTaskRef</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="bp">self</span><span class="p">.</span><span class="n">current_task</span><span class="p">;</span>
+<span class="w">    </span><span class="n">curr</span><span class="p">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">TaskState</span><span class="p">::</span><span class="n">Ready</span><span class="p">);</span>
+<span class="w">    </span><span class="bp">self</span><span class="p">.</span><span class="n">inner</span><span class="p">.</span><span class="n">switch_to</span><span class="p">(</span><span class="k">crate</span><span class="p">::</span><span class="n">current</span><span class="p">(),</span><span class="w"> </span><span class="n">migration_task</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+功能：将当前任务迁移到合适的 CPU 上执行，确保任务在正确的 CPU 上运行。</p>
 
 
 
@@ -2514,7 +2731,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 12:56:41">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月23日 15:25:36">2025年3月23日</span>
   </span>
 
     
@@ -2525,12 +2742,13 @@
   <span class="md-source-file__fact">
     <span class="md-icon" title="贡献者">
       
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M5 8c.56 0 1.08.15 1.53.42-.15 1.43.27 2.85 1.13 3.96C7.16 13.34 6.16 14 5 14a3 3 0 0 1-3-3 3 3 0 0 1 3-3m14 0a3 3 0 0 1 3 3 3 3 0 0 1-3 3c-1.16 0-2.16-.66-2.66-1.62a5.54 5.54 0 0 0 1.13-3.96c.45-.27.97-.42 1.53-.42M5.5 18.25c0-2.07 2.91-3.75 6.5-3.75s6.5 1.68 6.5 3.75V20h-13zM0 20v-1.5c0-1.39 1.89-2.56 4.45-2.9-.59.68-.95 1.62-.95 2.65V20zm24 0h-3.5v-1.75c0-1.03-.36-1.97-.95-2.65 2.56.34 4.45 1.51 4.45 2.9z"/></svg>
       
     </span>
     <nav>
       
-        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
+        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>, 
+        <a href="mailto:yy-yu21@mails.tsinghua.edu.cn">piggy</a>
     </nav>
   </span>
 
@@ -2582,7 +2800,7 @@
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a> (1.49%), <a href='mailto:yy-yu21@mails.tsinghua.edu.cn'>piggy</a> (98.51%)</span>
             </small>
         </div>
     
