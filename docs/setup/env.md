@@ -59,6 +59,9 @@ rustc 1.83.0 (90b35a623 2024-11-26)
 
 ### 安装必要依赖
 
+!!! note
+    以下命令都假设此时位于根目录 `/` 下，否则需要修改高亮行
+
 ```bash
 echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" | sudo tee -a /etc/apt/sources.list
 wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
@@ -69,10 +72,10 @@ sudo apt-get install -y --no-install-recommends libclang-19-dev wget make python
 sudo rm -rf /var/lib/apt/lists/*
 ```
 
-### 安装QEMU
+### 安装 QEMU
 
-```bash
-# 安装与qemu相关的软件包
+```bash hl_lines="5 11"
+# 安装与 QEMU 相关的软件包
 wget https://download.qemu.org/qemu-9.2.1.tar.xz
 tar xf qemu-9.2.1.tar.xz \
     && cd qemu-9.2.1 \
@@ -81,7 +84,7 @@ tar xf qemu-9.2.1.tar.xz \
         --enable-gcov --enable-debug --enable-slirp \
     && make -j$(nproc) \
     && make install
-# export PATH for qemu
+# export PATH for QEMU
 # export PATH="/qemu-bin-9.2.1/bin:$PATH"
 # 测试是否正确安装
 qemu-system-x86_64 --version
@@ -91,7 +94,7 @@ rm -rf qemu-9.2.1 qemu-9.2.1.tar.xz
 
 ### 安装 musl cross 工具链
 
-```bash
+```bash hl_lines="14"
 wget https://musl.cc/aarch64-linux-musl-cross.tgz
 wget https://musl.cc/riscv64-linux-musl-cross.tgz
 wget https://musl.cc/x86_64-linux-musl-cross.tgz
