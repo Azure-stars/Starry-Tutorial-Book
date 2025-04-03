@@ -33,10 +33,13 @@ Dockerfile 内容请参考 [ArceOS-Dockerfile](https://github.com/oscomp/arceos/
 
 ## 本地环境配置
 
-### 配置Rust开发环境
+### 配置 Rust 开发环境
+
 首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo，这里我们用官方的安装脚本来安装：
 
-`curl https://sh.rustup.rs -sSf | sh`
+```bash
+curl https://sh.rustup.rs -sSf | sh
+```
 
 如果通过官方的脚本下载失败了，可以在浏览器的地址栏中输入 [https://sh.rustup.rs](https://sh.rustup.rs/) 来下载脚本，在本地运行即可。
 
@@ -56,20 +59,23 @@ rustc 1.83.0 (90b35a623 2024-11-26)
 
 ### 安装必要依赖
 
+!!! note
+    以下命令都假设此时位于根目录 `/` 下，否则需要修改高亮行
+
 ```bash
 echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" | sudo tee -a /etc/apt/sources.list
 wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-sudo apt-get update \
-    && apt-get install -y --no-install-recommends libclang-19-dev wget make python3 \
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends libclang-19-dev wget make python3 \
         xz-utils python3-venv ninja-build bzip2 meson cmake dosfstools build-essential \
         pkg-config libglib2.0-dev git libslirp-dev  \
-    && rm -rf /var/lib/apt/lists/*
+sudo rm -rf /var/lib/apt/lists/*
 ```
 
-### 安装QEMU
+### 安装 QEMU
 
-```bash
-# 安装与qemu相关的软件包
+```bash hl_lines="5 11"
+# 安装与 QEMU 相关的软件包
 wget https://download.qemu.org/qemu-9.2.1.tar.xz
 tar xf qemu-9.2.1.tar.xz \
     && cd qemu-9.2.1 \
@@ -78,7 +84,7 @@ tar xf qemu-9.2.1.tar.xz \
         --enable-gcov --enable-debug --enable-slirp \
     && make -j$(nproc) \
     && make install
-# export PATH for qemu
+# export PATH for QEMU
 # export PATH="/qemu-bin-9.2.1/bin:$PATH"
 # 测试是否正确安装
 qemu-system-x86_64 --version
@@ -88,7 +94,7 @@ rm -rf qemu-9.2.1 qemu-9.2.1.tar.xz
 
 ### 安装 musl cross 工具链
 
-```bash
+```bash hl_lines="14"
 wget https://musl.cc/aarch64-linux-musl-cross.tgz
 wget https://musl.cc/riscv64-linux-musl-cross.tgz
 wget https://musl.cc/x86_64-linux-musl-cross.tgz
