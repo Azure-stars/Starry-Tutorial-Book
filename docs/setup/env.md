@@ -33,10 +33,13 @@ Dockerfile 内容请参考 [ArceOS-Dockerfile](https://github.com/oscomp/arceos/
 
 ## 本地环境配置
 
-### 配置Rust开发环境
+### 配置 Rust 开发环境
+
 首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo，这里我们用官方的安装脚本来安装：
 
-`curl https://sh.rustup.rs -sSf | sh`
+```bash
+curl https://sh.rustup.rs -sSf | sh
+```
 
 如果通过官方的脚本下载失败了，可以在浏览器的地址栏中输入 [https://sh.rustup.rs](https://sh.rustup.rs/) 来下载脚本，在本地运行即可。
 
