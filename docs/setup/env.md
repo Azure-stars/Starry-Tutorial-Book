@@ -59,11 +59,11 @@ rustc 1.83.0 (90b35a623 2024-11-26)
 ```bash
 echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" | sudo tee -a /etc/apt/sources.list
 wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-sudo apt-get update \
-    && apt-get install -y --no-install-recommends libclang-19-dev wget make python3 \
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends libclang-19-dev wget make python3 \
         xz-utils python3-venv ninja-build bzip2 meson cmake dosfstools build-essential \
         pkg-config libglib2.0-dev git libslirp-dev  \
-    && rm -rf /var/lib/apt/lists/*
+sudo rm -rf /var/lib/apt/lists/*
 ```
 
 ### 安装QEMU
