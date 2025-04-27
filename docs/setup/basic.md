@@ -87,7 +87,7 @@ make ARCH={arch} LOG={log} AX_TESTCASE={app_name} BLK=y NET=y ACCEL=n build
 4. 编写应用程序，例如在该文件夹下新建 `hello.c`文件，内容如下：
 
    ```c
-   #include "syscall.h"
+   #include "unistd.h"
 
    int main()
    {
