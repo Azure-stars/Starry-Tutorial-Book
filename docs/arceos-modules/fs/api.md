@@ -3,8 +3,9 @@
 本文介绍了 ArceOS 的文件系统接口设计，主要面向使用 `axfs` 模块构建操作系统内核的开发者，涉及的内容包括：
 
 1. 关键结构体与关联函数
-2. 基于根目录的 `[std::fs]-like` API
-3. `axfs` 模块 `feature` 配置策略
+2. `[std::fs]-like` 风格的 API
+3. `axfs` 模块中 `feature` 的配置策略
+4. 启动与初始化
 
 ## 关键结构体与关联函数
 
@@ -16,7 +17,7 @@
 4. `FileAttr`：文件属性，包括文件类型、权限、大小等信息
 
 
-### 文件操作
+### FILE 文件操作
 
 `File` 结构体表示打开的文件对象：
 
@@ -34,63 +35,81 @@ pub struct File {
 ```
 
 `File` 实现了如下的函数：
+
+| 函数名称 | 功能 |
+| ---- | ---- |
+| `open` | 以相对路径打开文件并返回 `File` 对象 |
+| `truncate` | 将文件截断或扩展到指定大小，若文件小于指定大小，则在文件末尾填充零。 |
+| `read` | 从当前位置读取文件内容并更新 `offset` |
+| `read_at` | 从指定位置读取文件内容且不更新 `offset` |
+| `write` | 从当前位置写入文件内容并更新 `offset` |
+| `write_at` | 从指定位置写入文件内容且不更新 `offset` |
+| `flush` | 将文件的缓冲区数据刷新到底层设备，确保数据持久化 |
+| `seek` | 设置文件 `offset` 到指定偏移量并返回新位置 |
+| `get_attr` | 获取文件的属性，返回 `FileAttr` 结构体，包含文件的权限、类型、大小等信息。 |
+
+在这里，我们需要注意的是，由于没有进行更多的封装，`flush` 不会像标准库一样地智能，所以在使用 `write` 过后需要调用 `flush` 函数来确保数据持久化到设备中。
+
+除此之外，只有 `File` 被 `drop` 触发**析构函数**，强制刷新文件的缓冲区数据才能够进行同步。
+
+下面是一个简单的使用示例：
 ```rust
-fn access_node(&self, cap: Cap) -> AxResult<&VfsNodeRef>;
+/// 创建一个 OpenOptions 对象
+fn options(opt: &str) -> fops::OpenOptions {
+    let mut opts = fops::OpenOptions::new();
+    opt.find("r").map(|_| opts.read(true));
+    opt.find("w").map(|_| opts.write(true));
+    opt.find("x").map(|_| opts.execute(true));
+    opt.find("a").map(|_| opts.append(true));
+    opt.find("t").map(|_| opts.truncate(true));
+    opt.find("c").map(|_| opts.create(true));
+    opt.find("n").map(|_| opts.create_new(true));
+    opt.find("d").map(|_| opts.directory(true));
+    opts
+}
 
-fn _open_at(dir: Option<&VfsNodeRef>, path: &str, opts: &OpenOptions) -> AxResult<Self>;
+fn file() -> AxResult {
+    let s = String::from("hello world");
+    let s_append = String::from(" arceOS!");
+    let file_path = "/test.txt";
+    
+    // write: 写入文件
+    let mut file = fops::File::open(file_path, &options("rwc"))?;
+    file.write(s.as_bytes())?;
+    file.flush()?;
 
-/// Opens a file at the path relative to the current directory. Returns a
-/// [`File`] object.
-pub fn open(path: &str, opts: &OpenOptions) -> AxResult<Self>;
+    // read: 读取文件
+    file.seek(SeekFrom::Start(0))?;
+    let mut buf = [0u8; 64];
+    let len = file.read(&mut buf)?;
+    assert_eq!(&buf[0..len], s.as_bytes());
 
-/// Truncates the file to the specified size.
-pub fn truncate(&self, size: u64) -> AxResult;
+    // write_append: 追加文件
+    let mut file = fops::File::open(file_path, &options("rwa"))?;
+    file.write(s_append.as_bytes())?;
+    file.flush()?;
 
-/// Reads the file at the current position. Returns the number of bytes
-/// read.
-///
-/// After the read, the cursor will be advanced by the number of bytes read.
-pub fn read(&mut self, buf: &mut [u8]) -> AxResult<usize>;
+    // seek: 定位文件指针
+    let mut file = fops::File::open(file_path, &options("r"))?;
+    file.seek(SeekFrom::Start(6))?;
+    let mut buf = [0u8; 64];
+    let len = file.read(&mut buf)?;
+    assert_eq!(buf[0..len], format!("{}{}", s, s_append).as_bytes()[6..]);
 
-/// Reads the file at the given position. Returns the number of bytes read.
-///
-/// It does not update the file cursor.
-pub fn read_at(&self, offset: u64, buf: &mut [u8]) -> AxResult<usize>;
+    // get_attr: 获取文件的元数据
+    let metadata = file.get_attr()?;
+    assert_eq!(metadata.file_type(), fops::FileType::File);
+    assert_eq!(metadata.size(), 19);
 
-/// Writes the file at the current position. Returns the number of bytes
-/// written.
-///
-/// After the write, the cursor will be advanced by the number of bytes
-/// written.
-pub fn write(&mut self, buf: &[u8]) -> AxResult<usize>;
-
-/// Writes the file at the given position. Returns the number of bytes
-/// written.
-///
-/// It does not update the file cursor.
-pub fn write_at(&self, offset: u64, buf: &[u8]) -> AxResult<usize>;
-
-/// Flushes the file, writes all buffered data to the underlying device.
-pub fn flush(&self) -> AxResult;
-
-/// Sets the cursor of the file to the specified offset. Returns the new
-/// position after the seek.
-pub fn seek(&mut self, pos: SeekFrom) -> AxResult<u64>;
-
-
-/// Gets the file attributes.
-pub fn get_attr(&self) -> AxResult<FileAttr>;
+    // 删除文件
+    let dir = fops::Directory::open_dir("/", &options("r"))?;   
+    dir.remove_file(file_path)?;
+    
+    Ok(())
+}
 ```
 
-解释一下 `File` 中的部分函数：
-
-- `truncate`：将文件截断或扩展到指定大小，若文件小于指定大小，则在文件末尾填充零。
-- `flush`：将文件的缓冲区数据刷新到底层设备，确保数据持久化。
-- `seek`：设置文件的读写位置，返回新的位置。`SeekFrom` 是一个枚举类型，表示相对位置，可以是文件开头、当前文件位置或文件末尾，与 `std::io::SeekFrom` 类似。
-- `get_attr`：获取文件的属性，返回 `FileAttr` 结构体，包含文件的权限、类型、大小等信息。
-
-
-### 目录操作
+### Directory 目录操作
 
 `Directory` 结构体表示打开的目录对象：
 
@@ -107,54 +126,65 @@ pub struct Directory {
 ```
 
 `Directory` 实现了如下的函数：
+
+| 函数名称 | 功能 |
+| ---- | ---- |
+| `open_dir` | 以相对路径打开目录并返回 `Directory` 对象 |
+| `open_dir_at` | 以相对于 `self` 的路径打开目录并返回 `Directory` 对象 |
+| `open_file_at` | 以相对于 `self` 的路径打开文件并返回 `File` 对象 |
+| `create_file` | 在相对于 `self` 的路径创建空文件 |
+| `create_dir` | 在相对于 `self` 的路径创建空目录 |
+| `remove_file` | 删除相对于 `self` 路径下的文件 |
+| `remove_dir` | 删除相对于 `self` 路径下的目录 |
+| `read_dir` | 从当前位置读取目录项到缓冲区并更新 `entry_idx` |
+| `rename` | 相对于当前目录重命名文件或目录，若新路径已存在则删除原文件 |
+
+在这里，我们需要注意的是，`rename` 函数不是基于 `self` 的路径，而是基于当前目录的路径进行重命名操作，当前路径可以调用 `api::current_dir()` 获得。
+
+下面是一个简单的使用示例：
 ```rust
-fn access_node(&self, cap: Cap) -> AxResult<&VfsNodeRef>;
+/// 检测文件/目录是否存在
+fn check_exsist(path: &str, assertion: bool) {
+    debug!("{} exsist: {}", path, assertion);
+    assert_eq!(api::absolute_path_exists(path), assertion);
+}
 
-fn _open_dir_at(dir: Option<&VfsNodeRef>, path: &str, opts: &OpenOptions) -> AxResult<Self>;
+/// 测试目录 API
+fn direction() -> AxResult {
+    let root_dir = fops::Directory::open_dir("/", &options("r"))?;
+    
+    // create_dir: 创建文件夹 /test
+    root_dir.create_dir("test")?; check_exsist("/test", true);
+    
+    let dir = fops::Directory::open_dir("/test", &options("r"))?;
+    
+    // create_file: 创建文件 /test/test_a.txt /test/test_b.txt
+    dir.create_file("test_a.txt")?; check_exsist("/test/test_a.txt", true);
+    dir.create_file("test_b.txt")?; check_exsist("/test/test_b.txt", true);
 
-fn access_at(&self, path: &str) -> AxResult<Option<&VfsNodeRef>>;
+    // rename: 修改文件名 /test/test_a.txt -> /test/test_c.txt
+    api::set_current_dir("/test").expect("set current dir failed");
+    dir.rename("test_a.txt", "test_c.txt")?;
+    check_exsist("test_a.txt", false);
+    check_exsist("test_c.txt", true);
+    api::set_current_dir("/").expect("set current dir failed");
+    
+    // remove_file: 删除文件 /test/test_b.txt /test/test_c.txt 
+    dir.remove_file("test_b.txt")?;
+    check_exsist("/test/test_b.txt", false);
+    dir.remove_file("test_c.txt")?;
+    check_exsist("/test/test_c.txt", false);
 
-/// Opens a directory at the path relative to the current directory.
-/// Returns a [`Directory`] object.
-pub fn open_dir(path: &str, opts: &OpenOptions) -> AxResult<Self>;
+    // remove_dir 删除文件夹 /test
+    root_dir.remove_dir("test")?;
+    check_exsist("/test", false);
 
-/// Opens a directory at the path relative to this directory. Returns a
-/// [`Directory`] object.
-pub fn open_dir_at(&self, path: &str, opts: &OpenOptions) -> AxResult<Self>;
-
-/// Opens a file at the path relative to this directory. Returns a [`File`]
-/// object.
-pub fn open_file_at(&self, path: &str, opts: &OpenOptions) -> AxResult<File>;
-
-/// Creates an empty file at the path relative to this directory.
-pub fn create_file(&self, path: &str) -> AxResult<VfsNodeRef>;
-
-/// Creates an empty directory at the path relative to this directory.
-pub fn create_dir(&self, path: &str) -> AxResult;
-
-/// Removes a file at the path relative to this directory.
-pub fn remove_file(&self, path: &str) -> AxResult;
-
-/// Removes a directory at the path relative to this directory.
-pub fn remove_dir(&self, path: &str) -> AxResult;
-
-/// Reads directory entries starts from the current position into the
-/// given buffer. Returns the number of entries read.
-///
-/// After the read, the cursor will be advanced by the number of entries
-/// read.
-pub fn read_dir(&mut self, dirents: &mut [DirEntry]) -> AxResult<usize>;
-
-/// Rename a file or directory to a new name.
-/// Delete the original file if `old` already exists.
-///
-/// This only works then the new path is in the same mounted fs.
-pub fn rename(&self, old: &str, new: &str) -> AxResult;
+    Ok(())
+}
 ```
 
-上述函数根据注释信息已经能够见名知意，这里不再加以赘述了。
 
-### 目录项
+### DirEntry 目录项
 
 `DirEntry` 结构体表示目录项，其中包含了文件名和文件属性等信息。它是 `axfs_vfs::VfsDirEntry` 的别名。
 
@@ -195,7 +225,7 @@ pub enum VfsNodeType {
 
     目前 Arceos 中的文件名长度限制为 63 字节，实际使用中可能会遇到一些问题，例如 `lwext4` 文件系统中，文件名长度限制为 255 字节，因此在使用 `lwext4` 文件系统时，可能会遇到文件名过长的问题。
 
-### 文件属性
+### FileAttr 文件属性
 
 `FileAttr` 结构体表示文件或目录的属性，包含了文件的权限、类型、大小和分配的块数等信息。它是 `axfs_vfs::VfsNodeAttr` 的别名。
 
@@ -254,83 +284,105 @@ bitflags::bitflags! {
 
 ![文件系统 API](../../static/arceos-modules/fs/文件系统API.png)
 
-```rust
-// file operations
+| 函数名称 | 功能 |
+| ---- | ---- |
+| `read` | 将文件的全部内容读入字节向量 |
+| `read_to_string` | 将文件的全部内容读入字符串 |
+| `write` | 将切片内容写入文件 |
+| `remove_file` | 从文件系统中删除文件 |
+| `read_dir` | 返回目录中条目的迭代器 |
+| `create_dir` | 创建新的空目录 |
+| `create_dir_all` | 递归创建目录及其所有父目录 |
+| `remove_dir` | 删除空目录 |
+| `metadata` | 查询文件系统获取文件、目录等的信息 |
+| `canonicalize` | 返回规范化的绝对路径 |
+| `absolute_path_exists` | 检查绝对路径是否存在 |
+| `current_dir` | 返回当前工作目录 |
+| `set_current_dir` | 更改当前工作目录 |
+| `rename` | 重命名文件或目录，若新路径已存在则删除原文件 |
 
-/// Read the entire contents of a file into a bytes vector.
-pub fn read(path: &str) -> io::Result<Vec<u8>>;
-
-/// Read the entire contents of a file into a string.
-pub fn read_to_string(path: &str) -> io::Result<String>;
-
-/// Write a slice as the entire contents of a file.
-pub fn write<C: AsRef<[u8]>>(path: &str, contents: C) -> io::Result<()>;
-
-/// Removes a file from the filesystem.
-pub fn remove_file(path: &str) -> io::Result<()>;
-
-
-// dir operations
-
-/// Returns an iterator over the entries within a directory.
-pub fn read_dir(path: &str) -> io::Result<ReadDir>;
-
-/// Creates a new, empty directory at the provided path.
-pub fn create_dir(path: &str) -> io::Result<()>;
-
-/// Recursively create a directory and all of its parent components if they
-/// are missing.
-pub fn create_dir_all(path: &str) -> io::Result<()>;
-
-/// Removes an empty directory.
-pub fn remove_dir(path: &str) -> io::Result<()>;
-
-// misc
-
-/// Given a path, query the file system to get information about a file,
-/// directory, etc.
-pub fn metadata(path: &str) -> io::Result<Metadata>;
-
-/// Returns the canonical, absolute form of a path with all intermediate
-/// components normalized.
-pub fn canonicalize(path: &str) -> io::Result<String>;
-
-/// check whether absolute path exists.
-pub fn absolute_path_exists(path: &str) -> bool;
-
-/// Returns the current working directory as a [`String`].
-pub fn current_dir() -> io::Result<String>;
-
-/// Changes the current working directory to the specified path.
-pub fn set_current_dir(path: &str) -> io::Result<()>;
-
-/// Rename a file or directory to a new name.
-/// Delete the original file if `old` already exists.
-///
-/// This only works then the new path is in the same mounted fs.
-pub fn rename(old: &str, new: &str) -> io::Result<()>;
-```
-
-!!! caution "基本元件 `axio`"
-
-    这里的 io 是 [axio](https://github.com/arceos-org/axio)，它类似于 Rust 标准库的 `std::io`，提供了在 `no_std` 环境下基本 IO 操作的接口。`axio` 属于 ArceOS 的基本元件之一，作为一个独立的 crate 发布，类似的元件还有 [axfs_crates](https://github.com/arceos-org/axfs_crates), [axmm_crates](https://github.com/arceos-org/axmm_crates) 等。体现了 ArceOS 的模块化设计理念。
-
-上面的代码可以分为以下三个部分：
+上面的 API 可以分为以下三个部分，目前除了 `create_dir_all` 之外都已经实现了：
 
 1. 文件操作：`read`、`read_to_string`、`write`、`remove_file`。
 2. 目录操作：`read_dir`、`create_dir`、`create_dir_all`、`remove_dir`。
 3. 其他操作：`metadata`、`canonicalize`、`absolute_path_exists`、`current_dir`、`set_current_dir`、`rename`。
 
-下面详细解释部分接口：
 
-1. `create_dir_all`：创建路径上的所有目录，功能类似于 `mkdir -p /path/to/dir`
-2. `metadata`：获取指定路径的元数据，返回 `Metadata` 结构体，其中包含文件类型、大小、读写权限等信息。
-3. `canonicalize`：将指定路径进行规范化处理，效果如下：
-    ```rust
-    assert_eq!(canonicalize("/path/./to//foo"), "/path/to/foo");
-    assert_eq!(canonicalize("/./path/to/../bar.rs"), "/path/bar.rs");
-    assert_eq!(canonicalize("./foo/./bar"), "foo/bar");
-    ```
+下面是一个简单的使用示例：
+```rust
+/// 输出目录下的文件列表
+fn do_ls(dir_path: &str) {
+    info!("do_ls in {}", dir_path);
+    api::read_dir(dir_path)
+        .expect("read dir failed")
+        .enumerate()
+        .for_each(|(i, entry)| {
+            let entry = entry.expect("read dir failed");
+            info!("{} {}", i, entry.file_name());
+        });
+}
+
+fn std_like_api() -> axio::Result {
+    do_ls("/"); // 输出根目录下的文件列表
+
+    let file_name = "test.txt";
+    let s = String::from("hello world");
+
+    // canonicalize: 路径规范化
+    assert_eq!(api::canonicalize("/path/./to//foo")?, "/path/to/foo");
+    
+    // current_dir: 获取当前目录
+    let current_dir = api::current_dir()?;
+    assert_eq!(current_dir, "/");
+
+    // create_dir: 创建目录
+    api::create_dir("/test")?;
+    check_exsist("/test", true);
+
+    // // create_dir_all: 递归创建目录（暂时不支持）
+    // api::create_dir_all("/test/b/c/d")?;
+    // check_exsist("/test/b/c/d", true);
+
+    // set_current_dir: 设置当前目录
+    api::set_current_dir("/test")?;
+    api::current_dir().map(|dir| assert_eq!(dir, "/test/"))?;
+
+    // write: 写入文件
+    api::write(file_name, &s)?;
+    check_exsist("/test/test.txt", true);
+
+    // read: 读取文件
+    let res = api::read(file_name)?;
+    assert_eq!(res, s.as_bytes());
+
+    // read_to_string: 读取文件到字符串
+    let res = api::read_to_string(file_name)?;
+    assert_eq!(res, s);
+
+    // rename: 重命名文件
+    api::rename(file_name, "test_renamed.txt")?;
+    check_exsist("/test/test.txt", false);
+    check_exsist("/test/test_renamed.txt", true);
+
+    // read_dir: 查看当前目录下的文件列表
+    do_ls("/test");
+
+    // remove_file: 删除文件
+    api::remove_file("test_renamed.txt")?;
+    check_exsist("/test/test_renamed.txt", false);
+    
+    // remove_dir: 删除目录
+    api::set_current_dir("/")?;
+    api::remove_dir("test")?;
+    check_exsist("/test", false);
+
+    Ok(())
+}
+```
+
+!!! caution "基本元件 `axio`"
+
+    这里的 io 是 [axio](https://github.com/arceos-org/axio)，它类似于 Rust 标准库的 `std::io`，提供了在 `no_std` 环境下基本 IO 操作的接口。`axio` 属于 ArceOS 的基本元件之一，作为一个独立的 crate 发布，类似的元件还有 [axfs_crates](https://github.com/arceos-org/axfs_crates), [axmm_crates](https://github.com/arceos-org/axmm_crates) 等。体现了 ArceOS 的模块化设计理念。
 
 
 ## Features 配置策略
@@ -476,7 +528,7 @@ pub(crate) fn new_myfs(disk: Disk) -> Arc<dyn VfsOps> {
     }
     ```
 
-这里 `#[crate_interface::impl_interface]` 是 `crate_interface` 提供的宏，用于实现接口。它会自动生成一个实现了 `MyFileSystemIf` 接口的结构体 `MyFileSystemIfImpl`，并将其注册到 `crate_interface` 中。
+这里 `#[crate_interface::impl_interface]` 是 `crate_interface` 提供的宏，用于实现依赖注入。`modules/axfs/src/fs/myfs.rs` 中将会转换为用户内核中定义的具体实现。
 
 随后，当 ArceOS 启动时，会自动调用 `MyFileSystemIfImpl::new_myfs` 函数来创建文件系统实例，并将其挂载到根目录上。
 
@@ -494,4 +546,116 @@ pub(crate) fn init_rootfs(disk: crate::dev::Disk) {
 
     let root_dir = RootDirectory::new(main_fs);
 }
+```
+
+## 启动与初始化
+
+ArceOS 中的文件系统模块 `axfs` 将在内核启动时进行初始化，执行流如下：
+
+1. **初始化设备**
+
+`axruntime` 承担着整个操作系统启动过程中的基础初始化工作，确保内核运行环境就绪。
+
+`axruntime` 会在启动时调用 `axdriver` 模块，初始化所有的设备驱动程序。当启动 `fs` 特性时，会将块设备传递给 `axfs` 模块初始化入口中。
+
+```rust
+/// modules/axruntime/src/lib.rs
+#[cfg_attr(not(test), unsafe(no_mangle))]
+pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
+    // ...
+    #[cfg(any(feature = "fs", feature = "net", feature = "display"))]
+    {
+        #[allow(unused_variables)]
+        let all_devices = axdriver::init_drivers();
+
+        #[cfg(feature = "fs")]
+        axfs::init_filesystems(all_devices.block);
+
+        #[cfg(feature = "net")]
+        axnet::init_network(all_devices.net);
+
+        #[cfg(feature = "display")]
+        axdisplay::init_display(all_devices.display);
+    }
+    // ...
+}
+```
+
+2. **初始化根目录文件系统**
+
+`axfs` 获取到第一个块设备的所有权后，调用 `init_rootfs` 函数对根目录进行初始化。
+
+```rust
+/// modules/axfs/src/lib.rs
+pub fn init_filesystems(mut blk_devs: AxDeviceContainer<AxBlockDevice>) {
+    info!("Initialize filesystems...");
+
+    let dev = blk_devs.take_one().expect("No block device found!");
+    info!("  use block device 0: {:?}", dev.device_name());
+    self::root::init_rootfs(self::dev::Disk::new(dev));
+}
+```
+
+3. **挂载根目录文件系统**
+
+根据 `Cargo.toml` 中的 `features` 配置，选择具体的文件系统类型作为根文件系统。默认情况下，根文件系统选择的优先级顺序依次为 `myfs`、`lwext4_rs`、`fatfs`。如果没有选择任何一个文件系统的 `feature`，则会导致编译错误。
+
+```rust
+pub(crate) fn init_rootfs(disk: crate::dev::Disk) {
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "myfs")] { // override the default filesystem
+            let main_fs = fs::myfs::new_myfs(disk);
+        } else if #[cfg(feature = "lwext4_rs")] {
+            static EXT4_FS: LazyInit<Arc<fs::lwext4_rust::Ext4FileSystem>> = LazyInit::new();
+            EXT4_FS.init_once(Arc::new(fs::lwext4_rust::Ext4FileSystem::new(disk)));
+            let main_fs = EXT4_FS.clone();
+        } else if #[cfg(feature = "fatfs")] {
+            static FAT_FS: LazyInit<Arc<fs::fatfs::FatFileSystem>> = LazyInit::new();
+            FAT_FS.init_once(Arc::new(fs::fatfs::FatFileSystem::new(disk)));
+            FAT_FS.init();
+            let main_fs = FAT_FS.clone();
+        }
+    }
+
+    let root_dir = RootDirectory::new(main_fs);
+    // ...
+}
+```
+
+4. **挂载特殊的文件系统**
+
+需要根据 `Cargo.toml` 中的 `features` 配置，挂载特殊的文件系统 `devfs`、`procfs`、`tmp` 和 `sysfs`，保证与 linux 系统的兼容性。
+
+```rust
+#[cfg(feature = "devfs")]
+root_dir
+    .mount("/dev", mounts::devfs())
+    .expect("failed to mount devfs at /dev");
+
+#[cfg(feature = "ramfs")]
+root_dir
+    .mount("/tmp", mounts::ramfs())
+    .expect("failed to mount ramfs at /tmp");
+
+// Mount another ramfs as procfs
+#[cfg(feature = "procfs")]
+root_dir // should not fail
+    .mount("/proc", mounts::procfs().unwrap())
+    .expect("fail to mount procfs at /proc");
+
+// Mount another ramfs as sysfs
+#[cfg(feature = "sysfs")]
+root_dir // should not fail
+    .mount("/sys", mounts::sysfs().unwrap())
+    .expect("fail to mount sysfs at /sys");
+```
+
+5. **注册目录节点**
+
+最后，将根目录、当前目录的 `VfsNodeRef` 注册到 `axfs` 的全局变量中，供其他模块使用。
+
+```rust
+ROOT_DIR.init_once(Arc::new(root_dir));
+CURRENT_DIR.init_new(Mutex::new(ROOT_DIR.clone()));
+CURRENT_DIR_PATH.init_new(Mutex::new("/".into()));
 ```
