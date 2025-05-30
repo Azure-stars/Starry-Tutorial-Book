@@ -104,6 +104,8 @@ nav:
     - arceos-modules/index.md
     - 运行时模块:
       - arceos-modules/runtime/index.md
+    - 配置与构建系统模块:
+      - arceos-modules/config/index.md
     - 硬件抽象层模块:
       - arceos-modules/hal/index.md
       - 模块接口与用例: arceos-modules/network/api.md
