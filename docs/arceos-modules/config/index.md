@@ -126,124 +126,30 @@ log-level-trace = ["axlog/log-level-trace"]
 
 ArceOS 支持多种硬件平台，不同平台有着不同的启动流程、处理器状态以及平台相关设备，因此需要一个统一的配置系统来管理这些差异。基于这样的需求，ArceOS 的平台配置系统的目标如下：
 
-1. 用户可以通过指定 Architecture 和 Platform 来选择编译目标平台。
-2. 配置信息必须在编译期确定，以便在内核启动时能够正确地识别和使用这些配置。
-3. 配置文件应易于理解和修改，支持用户自定义。
+1. 配置文件应易于理解和修改，支持用户自定义（**特定平台配置文件**）
+2. 配置信息要在编译期确定，以便在内核启动时能够正确地识别和使用（**axconfig 模块**）
+3. 用户可以通过指定 Arch 和 Platform 来选择编译目标平台，并且灵活配置（**Makefile**）
 
 ![平台配置](../../static/arceos-modules/config/axconfig构建配置.png)
 
-ArceOS 构建了如上的配置系统，右半部分是**内核编译前**阶段，用户通过指定 `Arch` 和 `Platform` 来运行 `make deconfig`，这会从**特定平台配置文件**复制到 `.axconfig.toml` 中。
+从全局的视角上看 ArceOS 为我们构建了如上的配置系统：
 
-左半部分是**内核编译后**阶段，通过 `axconfig` 模块将配置文件转换为静态的 rust 文件，由此进入内核环境以提供给 ArceOS 的其他模块进行配置读取。
+右半部分是**内核编译前**阶段，用户通过指定 `Arch` 和 `Platform` 来运行 `make deconfig`，这会将**特定平台配置文件**复制到 `.axconfig.toml` 中，为接下来的编译提供基础。
 
-### axconfig 模块
-
-`axconfig` 模块在这里扮演了**桥**的角色，用来处理配置文件（toml）到内核代码（rust）的转换。主要依赖于 [axconfig-gen](https://github.com/arceos-org/axconfig-gen) 元件的 `include_configs!` 宏实现在编译期将配置文件中的内容转换为 Rust 代码。
-
-```rust
-/// modules/axconfig/src/lib.rs
-#![no_std]
-
-axconfig_gen_macros::include_configs!(env!("AX_CONFIG_PATH"));
-```
-
-环境变量 `AX_CONFIG_PATH` 通常为项目目录中的 `.axconfig.toml`，该文件包含了用户指定的平台配置。例如，对于 `riscv64-qemu-virt.toml` 配置文件 `include_configs!` 宏则会生成如下的 rust 代码：
-
-```rust
-/// modules/axconfig/src/lib.rs
-
-/// Architecture identifier.
-pub const ARCH: &str = "riscv64";
-/// Platform identifier.
-pub const PLATFORM: &str = "riscv64-qemu-virt";
-/// Number of CPUs
-pub const SMP: usize = 1;
-/// Stack size of each task.
-pub const TASK_STACK_SIZE: usize = 0x40000;
-/// Number of timer ticks per second (Hz). A timer tick may contain several timer
-/// interrupts.
-pub const TICKS_PER_SEC: usize = 100;
-
-///
-/// Device specifications
-///
-pub mod devices {
-    /// MMIO regions with format (`base_paddr`, `size`).
-    pub const MMIO_REGIONS: &[(usize, usize)] = &[
-        (0x0010_1000, 0x1000),
-        (0x0c00_0000, 0x21_0000),
-        (0x1000_0000, 0x1000),
-        (0x1000_1000, 0x8000),
-        (0x3000_0000, 0x1000_0000),
-        (0x4000_0000, 0x4000_0000),
-    ];
-    /// End PCI bus number (`bus-range` property in device tree).
-    pub const PCI_BUS_END: usize = 0xff;
-    /// Base physical address of the PCIe ECAM space.
-    pub const PCI_ECAM_BASE: usize = 0x3000_0000;
-    /// PCI device memory ranges (`ranges` property in device tree).
-    pub const PCI_RANGES: &[(usize, usize)] = &[
-        (0x0300_0000, 0x1_0000),
-        (0x4000_0000, 0x4000_0000),
-        (0x4_0000_0000, 0x4_0000_0000),
-    ];
-    /// rtc@101000 {
-    ///     interrupts = <0x0b>;
-    ///     interrupt-parent = <0x03>;
-    ///     reg = <0x00 0x101000 0x00 0x1000>;
-    ///     compatible = "google,goldfish-rtc";
-    /// };
-    /// RTC (goldfish) Address
-    pub const RTC_PADDR: usize = 0x10_1000;
-    /// Timer interrupt frequency in Hz.
-    pub const TIMER_FREQUENCY: usize = 10_000_000;
-    /// VirtIO MMIO regions with format (`base_paddr`, `size`).
-    pub const VIRTIO_MMIO_REGIONS: &[(usize, usize)] = &[
-        (0x1000_1000, 0x1000),
-        (0x1000_2000, 0x1000),
-        (0x1000_3000, 0x1000),
-        (0x1000_4000, 0x1000),
-        (0x1000_5000, 0x1000),
-        (0x1000_6000, 0x1000),
-        (0x1000_7000, 0x1000),
-        (0x1000_8000, 0x1000),
-    ];
-}
-
-///
-/// Platform configs
-///
-pub mod plat {
-    /// Platform family.
-    pub const FAMILY: &str = "riscv64-qemu-virt";
-    /// Kernel address space base.
-    pub const KERNEL_ASPACE_BASE: usize = 0xffff_ffc0_0000_0000;
-    /// Kernel address space size.
-    pub const KERNEL_ASPACE_SIZE: usize = 0x0000_003f_ffff_f000;
-    /// Base physical address of the kernel image.
-    pub const KERNEL_BASE_PADDR: usize = 0x8020_0000;
-    /// Base virtual address of the kernel image.
-    pub const KERNEL_BASE_VADDR: usize = 0xffff_ffc0_8020_0000;
-    /// Offset of bus address and phys address. some boards, the bus address is
-    /// different from the physical address.
-    pub const PHYS_BUS_OFFSET: usize = 0;
-    /// Base address of the whole physical memory.
-    pub const PHYS_MEMORY_BASE: usize = 0x8000_0000;
-    /// Size of the whole physical memory. (128M)
-    pub const PHYS_MEMORY_SIZE: usize = 0x800_0000;
-    /// Linear mapping offset, for quick conversions between physical and virtual
-    /// addresses.
-    pub const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
-}
-```
-
-可以看到，内容与下文的**特定平台配置文件**中内容是存在对应关系的，具体请参考 [axconfig-gen](https://github.com/arceos-org/axconfig-gen)。
+左半部分是**内核编译后**阶段，通过 `axconfig` 模块将 `.axconfig` 配置文件转换为静态的 rust 文件，由此配置信息可以进入内核环境以提供给 ArceOS 中的其他模块进行读取。
 
 ### 特定平台配置文件
 
-ArceOS 的平台配置文件位于 `configs/platforms` 目录下，每个平台都有一个对应的配置文件，如果有调整栈内存大小这类需要，开发者可以直接对其进行修改。
+ArceOS 的平台配置文件位于 `configs/platforms` 目录下，每个平台都有一个对应的配置文件，这些配置中包含：
 
-如果需要添加新的平台配置，可以在该目录下创建一个新的 TOML 文件，文件名通常以 `<arch>-<platform>.toml` 的格式命名。内容格式可以参考现有的配置文件，例如：`riscv64-qemu-virt.toml`：
+- `arch`：架构标识符，如 `x86_64`、`riscv64` 等
+- `platform`：平台标识符，如 `x86-pc`、`riscv64-qemu-virt` 等
+- `plat`：平台特定配置，如内核地址空间、物理内存大小等
+- `devices`：设备相关配置，如 MMIO 区域、VirtIO 设备等
+
+如果需要添加新的平台配置，可以在该目录下创建一个新的 TOML 文件，文件名通常以 `<arch>-<platform>.toml` 的格式命名。
+
+下面以 `riscv64-qemu-virt.toml` 作为具体的例子，对配置文件的内容进行说明：
 
 ```toml
 # Architecture identifier.
@@ -325,11 +231,164 @@ timer-frequency = 10_000_000        # uint
 rtc-paddr = 0x10_1000               # uint
 ```
 
-内部包含了平台的架构标识符、平台标识符、物理内存布局、设备规格等平台特定的信息。
+当然，以上是 `riscv64-qemu-virt` 平台下的默认配置，如果开发者有额外的需要，可以直接对内部的配置进行修改。
+
+例如，在较为复杂的情形下，默认的 `phys-memory-size` 仅 128MB，无法满足需求，那么开发者可以将其扩大为 `0x1000_0000`（256MB）以适应更大的内存需求。
+
+下面是对该配置文件进一步的说明：
+
+| 配置项 | 描述 |
+| --- | --- |
+| **架构信息** | |
+| arch | 架构标识符，为 `riscv64` |
+| platform | 平台标识符，为 `riscv64-qemu-virt` |
+| **平台配置** | |
+| family | 平台标识符，为 `riscv64-qemu-virt` |
+| phys-memory-base | 物理内存的基地址，为 `0x8000_0000` |
+| phys-memory-size | 物理内存的大小，为 `0x800_0000`（128MB） |
+| kernel-base-paddr | kernel 的物理基地址，为 `0x8020_0000` |
+| kernel-base-vaddr | kernel 的虚拟基地址，为 `0xffff_ffc0_8020_0000` |
+| phys-virt-offset | 物理地址与虚拟地址的转换偏移量，为 `0xffff_ffc0_0000_0000` |
+| phys-bus-offset | 物理地址与总线地址的偏移量，为 `0` |
+| kernel-aspace-base | 内核地址空间的基地址，为 `0xffff_ffc0_0000_0000` |
+| kernel-aspace-size | 内核地址空间的大小，为 `0x0000_003f_ffff_f000` |
+| **设备配置** | |
+| mmio-regions | MMIO 区域列表，格式为 `[基地址, 大小]`，包括： |
+| &nbsp;&nbsp;&nbsp;&nbsp;RTC | 实时时钟，用于提供时间信息 `[0x0010_1000, 0x1000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;PLIC | 平台级中断控制器 `[0x0c00_0000, 0x21_0000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;UART | 串行通信 `[0x1000_0000, 0x1000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;VirtIO | 虚拟化设备接口 `[0x1000_1000, 0x8000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;PCI config space | PCI配置空间，用于存储 PCI 设备的配置信息 `[0x3000_0000, 0x1000_0000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;PCI memory ranges | PCI 设备的 32 位 MMIO 空间 `[0x4000_0000, 0x4000_0000]` |
+| virtio-mmio-regions | VirtIO MMIO 区域列表，格式为 `[基地址, 大小]`，包括： |
+| &nbsp;&nbsp;&nbsp;&nbsp;VirtIO 1 | `[0x1000_1000, 0x1000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;VirtIO **...** | `[0x1000_N000, 0x1000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;VirtIO 8 | `[0x1000_8000, 0x1000]` |
+| pci-ecam-base | PCIe ECAM 空间的基地址，为 `0x3000_0000` |
+| pci-bus-end | 最大 PCI 总线号，为 `0xff` |
+| pci-ranges | PCI 设备内存范围列表，格式为 `[基地址, 大小]`，包括： |
+| &nbsp;&nbsp;&nbsp;&nbsp;PIO space | `[0x0300_0000, 0x1_0000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;32-bit MMIO space | `[0x4000_0000, 0x4000_0000]` |
+| &nbsp;&nbsp;&nbsp;&nbsp;64-bit MMIO space | `[0x4_0000_0000, 0x4_0000_0000]` |
+| timer-frequency | 定时器中断频率，为 `10_000_000` Hz |
+| rtc-paddr | RTC 设备的物理地址，为 `0x10_1000` |
+
+### axconfig 模块
+
+`axconfig` 模块在平台配置中扮演了**桥**的角色，用来处理配置文件（toml）到内核代码（rust）的转换。内部的实现主要依赖于 [axconfig-gen](https://github.com/arceos-org/axconfig-gen) 元件的 `include_configs!` 宏来实现在编译期的完成配置文件转换。
+
+```rust
+/// modules/axconfig/src/lib.rs
+#![no_std]
+
+axconfig_gen_macros::include_configs!(env!("AX_CONFIG_PATH"));
+```
+
+环境变量 `AX_CONFIG_PATH` 通常为项目目录中的 `.axconfig.toml`，该文件包含了用户指定的平台配置，例如 `make ARCH=riscv64 defconfig` 将会来自于 `riscv64-qemu-virt.toml` 文件。
+
+对于 `axconfig_gen_macros::include_configs!` 宏，ArceOS 为了简化配置的难度，建立了 toml 到 rust 的映射关系，基本规则如下：
+
+| 映射内容       | TOML | Rust |
+|---------------|--------|----------------------|
+| 单行注释       | `# 注释内容` | `/// 注释内容` |
+| 模块定义       | `[plat]`| `pub mod plat { ... }` |
+| 字符串常量     | `key = "value"`| `pub const KEY: &str = "value";` |
+| 整数常量       | `key = 0x1234_5678`| `pub const KEY: usize = 0x1234_5678;` |
+| 数组常量       | `key =[` <br> &nbsp;&nbsp;&nbsp;&nbsp;`[0x1234, 0x5678],` <br> &nbsp;&nbsp;&nbsp;&nbsp;`[0x9abc, 0xdef0]` <br> `]`| `pub const KEY: &[(usize, usize)] = &[` <br> &nbsp;&nbsp;&nbsp;&nbsp;`(0x1234, 0x5678), ` <br> &nbsp;&nbsp;&nbsp;&nbsp;`(0x9abc, 0xdef0)` <br> `];` |
+| 嵌套模块       | `[plat]`<br>`key = "value"` | `pub mod plat {`<br>&nbsp;&nbsp;&nbsp;&nbsp;`pub const KEY: usize = value;`<br>`}` |
+
+
+例如，对于 `riscv64-qemu-virt.toml` 配置文件，命令行执行
+```sh
+axconfig-gen -f rust configs/platforms/riscv64-qemu-virt.toml
+```
+
+可以生成如下的 Rust 代码：
+
+```rust
+/// Architecture identifier.
+pub const ARCH: &str = "riscv64";
+/// Platform identifier.
+pub const PLATFORM: &str = "riscv64-qemu-virt";
+
+///
+/// Device specifications
+///
+pub mod devices {
+    /// MMIO regions with format (`base_paddr`, `size`).
+    pub const MMIO_REGIONS: &[(usize, usize)] = &[
+        (0x0010_1000, 0x1000),
+        (0x0c00_0000, 0x21_0000),
+        (0x1000_0000, 0x1000),
+        (0x1000_1000, 0x8000),
+        (0x3000_0000, 0x1000_0000),
+        (0x4000_0000, 0x4000_0000),
+    ];
+    /// End PCI bus number (`bus-range` property in device tree).
+    pub const PCI_BUS_END: usize = 0xff;
+    /// Base physical address of the PCIe ECAM space.
+    pub const PCI_ECAM_BASE: usize = 0x3000_0000;
+    /// PCI device memory ranges (`ranges` property in device tree).
+    pub const PCI_RANGES: &[(usize, usize)] = &[
+        (0x0300_0000, 0x1_0000),
+        (0x4000_0000, 0x4000_0000),
+        (0x4_0000_0000, 0x4_0000_0000),
+    ];
+    /// rtc@101000 {
+    ///     interrupts = <0x0b>;
+    ///     interrupt-parent = <0x03>;
+    ///     reg = <0x00 0x101000 0x00 0x1000>;
+    ///     compatible = "google,goldfish-rtc";
+    /// };
+    /// RTC (goldfish) Address
+    pub const RTC_PADDR: usize = 0x10_1000;
+    /// Timer interrupt frequency in Hz.
+    pub const TIMER_FREQUENCY: usize = 10_000_000;
+    /// VirtIO MMIO regions with format (`base_paddr`, `size`).
+    pub const VIRTIO_MMIO_REGIONS: &[(usize, usize)] = &[
+        (0x1000_1000, 0x1000),
+        (0x1000_2000, 0x1000),
+        (0x1000_3000, 0x1000),
+        (0x1000_4000, 0x1000),
+        (0x1000_5000, 0x1000),
+        (0x1000_6000, 0x1000),
+        (0x1000_7000, 0x1000),
+        (0x1000_8000, 0x1000),
+    ];
+}
+
+///
+/// Platform configs
+///
+pub mod plat {
+    /// Platform family.
+    pub const FAMILY: &str = "riscv64-qemu-virt";
+    /// Kernel address space base.
+    pub const KERNEL_ASPACE_BASE: usize = 0xffff_ffc0_0000_0000;
+    /// Kernel address space size.
+    pub const KERNEL_ASPACE_SIZE: usize = 0x0000_003f_ffff_f000;
+    /// Base physical address of the kernel image.
+    pub const KERNEL_BASE_PADDR: usize = 0x8020_0000;
+    /// Base virtual address of the kernel image.
+    pub const KERNEL_BASE_VADDR: usize = 0xffff_ffc0_8020_0000;
+    /// Offset of bus address and phys address. some boards, the bus address is
+    /// different from the physical address.
+    pub const PHYS_BUS_OFFSET: usize = 0;
+    /// Base address of the whole physical memory.
+    pub const PHYS_MEMORY_BASE: usize = 0x8000_0000;
+    /// Size of the whole physical memory. (128M)
+    pub const PHYS_MEMORY_SIZE: usize = 0x800_0000;
+    /// Linear mapping offset, for quick conversions between physical and virtual
+    /// addresses.
+    pub const PHYS_VIRT_OFFSET: usize = 0xffff_ffc0_0000_0000;
+}
+```
+
+这样，ArceOS 的内核代码就可以直接使用这些配置常量，而不需要在运行时解析 TOML 文件，从而提高了性能和安全性。
 
 ## Makefile
 
-ArceOS 的 Makefile 主要用于管理内核的编译流程和配置生成，具体细节建议参考 [Makefile](https://github.com/arceos-org/arceos/blob/main/Makefile)，下面是 Makefile 的一些选项和功能说明：
+ArceOS 的 Makefile 主要用于管理内核的编译流程和配置生成，具体细节建议参考 [Makefile](https://github.com/arceos-org/arceos/blob/main/Makefile)，下面给出 Makefile 的一些选项和功能说明：
 
 ### **通用选项**
 | 参数                | 说明                                                                 | 示例/默认值                          |
