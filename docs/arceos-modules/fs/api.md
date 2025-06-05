@@ -41,33 +41,57 @@ pub struct File {
 ```rust
 // modules/axfs/src/fops.rs
 
-/// 相对于当前目录打开文件，返回 `File` 对象
+/// Opens a file at the path relative to the current directory. 
+///
+/// Returns a [`File`] object.
 pub fn open(path: &str, opts: &OpenOptions) -> AxResult<Self>;
 
-/// 将文件截断或扩展到指定大小，若文件小于指定大小，则在文件末尾填充 `\0`
+/// Truncates the file to the specified size.
 pub fn truncate(&self, size: u64) -> AxResult;
 
-/// 从当前位置读取文件内容到缓冲区，返回读取的字节数，更新文件指针 
+/// Reads the file at the current position. Returns the number of bytes read.
+///
+/// After the read, the cursor will be advanced by the number of bytes read.
 pub fn read(&mut self, buf: &mut [u8]) -> AxResult<usize>;
 
-/// 从指定位置读取文件内容到缓冲区，返回读取的字节数，不更新文件指针
+/// Reads the file at the given position. Returns the number of bytes read.
+/// 
+/// It does not update the file cursor.
 pub fn read_at(&self, offset: u64, buf: &mut [u8]) -> AxResult<usize>;
 
-/// 从当前位置写入缓冲区内容到文件，返回写入的字节数，更新文件指针
+/// Writes the file at the current position. Returns the number of bytes written.
+/// 
+/// After the write, the cursor will be advanced by the number of bytes written.
 pub fn write(&mut self, buf: &[u8]) -> AxResult<usize>;
 
-/// 从指定位置写入缓冲区内容到文件，返回写入的字节数，不更新文件指针
+/// Writes the file at the given position. Returns the number of bytes written.
+/// 
+/// It does not update the file cursor.
 pub fn write_at(&self, offset: u64, buf: &[u8]) -> AxResult<usize>;
 
-/// 将文件缓冲区数据刷新到底层设备
+/// Flushes the file, writes all buffered data to the underlying device.
 pub fn flush(&self) -> AxResult;
 
-/// 设置文件指针到指定位置，返回新的位置
+/// Sets the cursor of the file to the specified offset. Returns the new
+/// position after the seek.
 pub fn seek(&mut self, pos: SeekFrom) -> AxResult<u64>;
 
-/// 获取文件的属性，返回 `FileAttr` 结构体，包含文件的权限、类型、大小等信息。
+/// Gets the file attributes.
 pub fn get_attr(&self) -> AxResult<FileAttr>;
 ```
+
+| 函数名 | 功能 |
+| --- | --- |
+| `open` | 相对于当前目录打开文件，返回 `File` 对象 |
+| `truncate` | 将文件截断或扩展到指定大小，若文件小于指定大小，则在文件末尾填充 `\0` |
+| `read` | 从当前位置读取文件内容到缓冲区，返回读取的字节数，更新文件指针 |
+| `read_at` | 从指定位置读取文件内容到缓冲区，返回读取的字节数，不更新文件指针 |
+| `write` | 从当前位置写入缓冲区内容到文件，返回写入的字节数，更新文件指针 |
+| `write_at` | 从指定位置写入缓冲区内容到文件，返回写入的字节数，不更新文件指针 |
+| `flush` | 将文件缓冲区数据刷新到底层设备 |
+| `seek` | 设置文件指针到指定位置，返回新的位置 |
+| `get_attr` | 获取文件的属性，返回 `FileAttr` 结构体，包含文件的权限、类型、大小等信息 |
+
 
 在这里，我们需要注意的是，由于没有进行更多的封装，`axfs` 不像标准库一样地智能，所以在使用 `write` 过后需要调用 `flush` 函数来确保数据持久化到设备中。
 
@@ -149,38 +173,61 @@ pub struct Directory {
 ```
 
 `Directory` 实现了如下的函数：
+
 ```rust
 // modules/axfs/src/fops.rs
 
-/// 相对于当前目录打开目录，返回 `Directory` 对象
+/// Opens a directory at the path relative to the current directory.
+/// Returns a [`Directory`] object.
 pub fn open_dir(path: &str, opts: &OpenOptions) -> AxResult<Self>;
 
-/// 相对于此目录打开目录，返回 `Directory` 对象
+/// Opens a directory at the path relative to this directory. 
+/// Returns a [`Directory`] object.
 pub fn open_dir_at(&self, path: &str, opts: &OpenOptions) -> AxResult<Self>;
 
-/// 相对于此目录打开文件，返回 `File` 对象
+/// Opens a file at the path relative to this directory. 
+/// Returns a [`File`] object.
 pub fn open_file_at(&self, path: &str, opts: &OpenOptions) -> AxResult<File>;
 
-/// 在此目录下创建空文件
+/// Creates an empty file at the path relative to this directory.
 pub fn create_file(&self, path: &str) -> AxResult<VfsNodeRef>;
 
-/// 在此目录下创建空目录
+/// Creates an empty directory at the path relative to this directory.
 pub fn create_dir(&self, path: &str) -> AxResult;
 
-/// 移除在此目录下的文件
+/// Removes a file at the path relative to this directory.
 pub fn remove_file(&self, path: &str) -> AxResult;
 
-/// 移除在此目录下的指定目录
+/// Removes a directory at the path relative to this directory.
 pub fn remove_dir(&self, path: &str) -> AxResult;
 
-/// 从当前位置开始读取目录条目到缓冲区，返回读取的条目数，更新目录指针
+/// Reads directory entries starts from the current position into the
+/// given buffer. Returns the number of entries read.
+///
+/// After the read, the cursor will be advanced by the number of entries
+/// read.
 pub fn read_dir(&mut self, dirents: &mut [DirEntry]) -> AxResult<usize>;
 
-/// 重命名文件或目录，若新路径已存在则删除原文件，要求新旧路径必须在同一文件系统中
+/// Rename a file or directory to a new name.
+/// Delete the original file if `old` already exists.
+///
+/// This only works then the new path is in the same mounted fs.
 pub fn rename(&self, old: &str, new: &str) -> AxResult;
 ```
 
-在这里，我们需要注意的是，`rename` 函数不是基于 `self` 的路径，而是基于当前目录的路径进行重命名操作，当前路径可以调用 `api::current_dir()` 获得。
+| 函数名 | 功能 |
+| --- | --- |
+| `open_dir` | 相对于当前目录打开目录，返回 `Directory` 对象 |
+| `open_dir_at` | 相对于此目录打开目录，返回 `Directory` 对象 |
+| `open_file_at` | 相对于此目录打开文件，返回 `File` 对象 |
+| `create_file` | 在此目录下创建空文件 |
+| `create_dir` | 在此目录下创建空目录 |
+| `remove_file` | 移除在此目录下的文件 |
+| `remove_dir` | 移除在此目录下的指定目录 |
+| `read_dir` | 从当前位置开始读取目录条目到缓冲区，返回读取的条目数，更新目录指针 |
+| `rename` | 重命名文件或目录，若新路径已存在则删除原文件，要求新旧路径必须在同一文件系统中 |
+
+在这里，我们需要注意的是，`rename` 函数不是基于 `self` 的路径，而是基于当前目录的路径进行重命名操作，当前路径可以调用 `api::current_dir()` 获取。
 
 下面是一个简单的使用示例：
 ```rust
@@ -257,19 +304,32 @@ pub struct VfsDirEntry {
 #[derive(Default, Clone)]
 pub struct OpenOptions {
     // generic
-    read: bool,         // 是否可读
-    write: bool,        // 是否可写
-    execute: bool,      // 是否可执行
-    append: bool,       // 是否以追加模式打开，若为 true，写入操作将追加到文件末尾而非覆盖原有内容。
-    truncate: bool,     // 是否截断文件，若为 true，打开文件时将清空其内容（文件大小置为 0）。
-    create: bool,       // 是否创建文件，即使文件已存在也不会返回错误
-    create_new: bool,   // 是否创建新文件，若文件已存在则返回错误
-    directory: bool,    // 是否打开目录，若为 true，尝试将路径作为目录打开（而非文件）
+    read    : bool,         
+    write   : bool,        
+    execute : bool,      
+    append  : bool,       
+    truncate: bool,     
+    create  : bool,       
+    create_new: bool,   
+    directory: bool,    
     // system-specific
     _custom_flags: i32,
     _mode: u32,
 }
 ```
+
+该 `OpenOptions` 结构体与 Rust 标准库中的 `std::fs::OpenOptions` 类似，但为了满足 `axfs` 的需要，内部提供了更多的选项来配置文件的打开方式。它包含以下字段：
+
+- `read`：是否可读
+- `write`：是否可写
+- `execute`：是否可执行
+- `append`：是否以追加模式打开，若为 true，写入操作将追加到文件末尾而非覆盖原有内容。
+- `truncate`：是否截断文件，若为 true，打开文件时将清空其内容（文件大小置为 0）。
+- `create`：是否创建文件，即使文件已存在也不会返回错误
+- `create_new`：是否创建新文件，若文件已存在则返回错误
+- `directory`：是否打开目录，若为 true，尝试将路径作为目录打开（而非文件）
+- `_custom_flags`：系统特定的自定义标志，暂未使用
+- `_mode`：文件权限模式，暂未使用
 
 ### 元数据
 
@@ -360,46 +420,52 @@ bitflags::bitflags! {
 ```rust
 // modules/axfs/src/api/mod.rs
 
-/// 返回一个目录项迭代器
+/// Returns an iterator over the entries within a directory.
 pub fn read_dir(path: &str) -> io::Result<ReadDir>;
 
-/// 返回规范化的绝对路径
+/// Returns the canonical, absolute form of a path with all intermediate
+/// components normalized.
 pub fn canonicalize(path: &str) -> io::Result<String>;
 
-/// 返回当前工作目录
+/// Returns the current working directory as a [`String`].
 pub fn current_dir() -> io::Result<String>;
 
-/// 更改当前工作目录
+/// Changes the current working directory to the specified path.
 pub fn set_current_dir(path: &str) -> io::Result<()>;
 
-/// 将文件的全部内容读入字节向量
+/// Read the entire contents of a file into a bytes vector.
 pub fn read(path: &str) -> io::Result<Vec<u8>>;
 
-/// 将文件的全部内容读入字符串
+/// Read the entire contents of a file into a string.
 pub fn read_to_string(path: &str) -> io::Result<String>;
 
-/// 将切片内容全部写入文件中
+/// Write a slice as the entire contents of a file.
 pub fn write<C: AsRef<[u8]>>(path: &str, contents: C) -> io::Result<()>;
 
-/// 查询文件系统获取文件、目录等的信息
+/// Given a path, query the file system to get information about a file,
+/// directory, etc.
 pub fn metadata(path: &str) -> io::Result<Metadata>;
 
-/// 创建一个空目录
+/// Creates a new, empty directory at the provided path.
 pub fn create_dir(path: &str) -> io::Result<()>;
 
-/// 递归创建目录及其所有父目录（目前不支持）
+/// Recursively create a directory and all of its parent components if they
+/// are missing.
 pub fn create_dir_all(path: &str) -> io::Result<()>;
 
-/// 删除指定空目录
+/// Removes an empty directory.
 pub fn remove_dir(path: &str) -> io::Result<()>;
 
 /// Removes a file from the filesystem.
 pub fn remove_file(path: &str) -> io::Result<()>;
 
-/// 重命名文件或目录，若新路径已存在则删除原文件
+/// Rename a file or directory to a new name.
+/// Delete the original file if `old` already exists.
+///
+/// This only works then the new path is in the same mounted fs.
 pub fn rename(old: &str, new: &str) -> io::Result<()>;
 
-/// 检查路径是否存在
+/// check whether absolute path exists.
 pub fn absolute_path_exists(path: &str) -> bool;
 ```
 
@@ -409,6 +475,22 @@ pub fn absolute_path_exists(path: &str) -> bool;
 2. 目录操作：`read_dir`、`create_dir`、`create_dir_all`、`remove_dir`。
 3. 其他操作：`metadata`、`canonicalize`、`absolute_path_exists`、`current_dir`、`set_current_dir`、`rename`。
 
+| 函数名 | 功能 |
+| --- | --- |
+| `read_dir` | 返回一个目录项迭代器 |
+| `canonicalize` | 返回规范化的绝对路径 |
+| `current_dir` | 返回当前工作目录 |
+| `set_current_dir` | 更改当前工作目录 |
+| `read` | 将文件的全部内容读入字节向量 |
+| `read_to_string` | 将文件的全部内容读入字符串 |
+| `write` | 将切片内容全部写入文件中 |
+| `metadata` | 查询文件系统获取文件、目录等的信息 |
+| `create_dir` | 创建一个空目录 |
+| `create_dir_all` | 递归创建目录及其所有父目录（目前不支持） |
+| `remove_dir` | 删除指定空目录 |
+| `remove_file` | 删除文件 |
+| `rename` | 重命名文件或目录，若新路径已存在则删除原文件 |
+| `absolute_path_exists` | 检查路径是否存在 |
 
 下面是一个简单的使用示例：
 ```rust
