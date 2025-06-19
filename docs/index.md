@@ -31,4 +31,4 @@ Starry 的实现划分为三大部分（见下图）：
 2. Starry API: 它会调用底层ArceOS 和 Starry Core 中的各种功能，并将它们封装为标准的 POSIX 接口。当接收到用户的 syscall 请求时，Starry 会将其转发给 Starry API 层进行处理，从而实现兼容 Linux Application 的目标。
 3. Starry Crates: Starry 抽象出来的模块组件, 与内核无关且可以被被其他内核复用。
 
-![Starry 结构图](../../static/setup/starry_structure.jpg)
+![Starry 结构图](./static/setup/starry_structure.jpg)
