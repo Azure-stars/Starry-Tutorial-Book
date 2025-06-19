@@ -2591,6 +2591,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#starry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Starry 的设计目标
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2610,7 +2627,7 @@
 
 
 <h1 id="starry-tutorial-book">欢迎来到 Starry Tutorial Book<a class="headerlink" href="#starry-tutorial-book" title="Permanent link">&para;</a></h1>
-<p>Starry 是基于 <a href="https://github.com/arceos-org/arceos">ArceOS</a> 编写的、兼容 Linux 接口的宏内核。它拥有如下特点：</p>
+<p>Starry 是基于 <a href="https://github.com/arceos-org/arceos">ArceOS</a> 编写的、兼容 Linux 接口的宏内核（Monolithic Kernel）。它拥有如下特点：</p>
 <ol>
 <li>
 <p>跨平台支持：支持 x86_64/riscv64/aarch64/loongarch64 等多种指令架构，可以运行在星光二代、飞腾派等多种硬件平台上。</p>
@@ -2622,6 +2639,52 @@
 <p>Linux 兼容：对外提供标准的 POSIX 接口</p>
 </li>
 </ol>
+<div class="admonition info">
+<p class="admonition-title">Starry 与 ArceOS 之间的关系</p>
+<p>不同的形态的内核存在着共性的功能，这些共性恰好可以由最简内核形态：<strong><em>Unikernel</em></strong> 提供。<a href="https://github.com/arceos-org/arceos">ArceOS</a> 正是一个可定制的 Unikernel ，它预留了扩展为宏内核所需的接口和配置文件，可以作为宏内核 Starry 的基本框架和执行环境，即 <strong><em>Kernel Backbone</em></strong>。宏内核与 Unikernel 的对比如下表所示：</p>
+<div align="center">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ArceOS</th>
+<th>Starry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>内核类型</td>
+<td>Unikernel</td>
+<td>宏内核</td>
+</tr>
+<tr>
+<td>特权模式</td>
+<td>特权级 + 用户级</td>
+<td>仅特权级</td>
+</tr>
+<tr>
+<td>资源所有权</td>
+<td>全局所有</td>
+<td>各个进程独立拥有</td>
+</tr>
+<tr>
+<td>调用内核提供的服务</td>
+<td>直接通过函数调用</td>
+<td>由系统调用(syscall)实现</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2 id="starry">Starry 的设计目标<a class="headerlink" href="#starry" title="Permanent link">&para;</a></h2>
+<p>Starry 的设计目标是按照灵活内核设计原则，实现 ArceOS 的宏内核扩展。其特性功能应当包括完善的进程管理、信号处理、POSIX API 实现等各种功能。</p>
+<p>Starry 的实现划分为三大部分（见下图）：</p>
+<ol>
+<li>Starry Core: 仅负责完成一个基本的宏内核应当具备的功能：特权级切换、进程粒度的资源隔离等。</li>
+<li>Starry API: 它会调用底层ArceOS 和 Starry Core 中的各种功能，并将它们封装为标准的 POSIX 接口。当接收到用户的 syscall 请求时，Starry 会将其转发给 Starry API 层进行处理，从而实现兼容 Linux Application 的目标。</li>
+<li>Starry Crates: Starry 抽象出来的模块组件, 与内核无关且可以被被其他内核复用。</li>
+</ol>
+<p><img alt="Starry 结构图" src="../../static/setup/starry_structure.jpg" /></p>
 
 
 
@@ -2642,7 +2705,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 10:58:39 UTC">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年6月19日 13:45:15 UTC">2025年6月19日</span>
   </span>
 
     
@@ -2653,11 +2716,12 @@
   <span class="md-source-file__fact">
     <span class="md-icon" title="贡献者">
       
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M5 8c.56 0 1.08.15 1.53.42-.15 1.43.27 2.85 1.13 3.96C7.16 13.34 6.16 14 5 14a3 3 0 0 1-3-3 3 3 0 0 1 3-3m14 0a3 3 0 0 1 3 3 3 3 0 0 1-3 3c-1.16 0-2.16-.66-2.66-1.62a5.54 5.54 0 0 0 1.13-3.96c.45-.27.97-.42 1.53-.42M5.5 18.25c0-2.07 2.91-3.75 6.5-3.75s6.5 1.68 6.5 3.75V20h-13zM0 20v-1.5c0-1.39 1.89-2.56 4.45-2.9-.59.68-.95 1.62-.95 2.65V20zm24 0h-3.5v-1.75c0-1.03-.36-1.97-.95-2.65 2.56.34 4.45 1.51 4.45 2.9z"/></svg>
       
     </span>
     <nav>
       
+        <a href="mailto:dut_wr@outlook.com">Ryan Wang</a>, 
         <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
     </nav>
   </span>
@@ -2710,7 +2774,7 @@
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:dut_wr@outlook.com'>Ryan Wang</a> (76.47%), <a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a> (23.53%)</span>
             </small>
         </div>
     
