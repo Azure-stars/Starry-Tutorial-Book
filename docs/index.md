@@ -31,46 +31,4 @@ Starry 的实现划分为三大部分（见下图）：
 2. Starry API: 它会调用底层ArceOS 和 Starry Core 中的各种功能，并将它们封装为标准的 POSIX 接口。当接收到用户的 syscall 请求时，Starry 会将其转发给 Starry API 层进行处理，从而实现兼容 Linux Application 的目标。
 3. Starry Crates: Starry 抽象出来的模块组件, 与内核无关且可以被被其他内核复用。
 
-```mermaid 
-graph TD
-  Linux_APP["Linux APP"]:::root
-  Starry_API["Starry API"]:::api
-  Starry_Core["Starry Core"]:::core
-  ArceOS_Backbone["ArceOS Backbone"]:::backbone
-  
-  subgraph ArceOS_Modules[ArceOS Modules]
-    axruntime["axruntime"]:::mod
-    axnet["axnet"]:::mod
-    axtask["axtask"]:::mod
-    axdriver["axdriver"]:::mod
-    axfs["axfs"]:::mod
-  end
-  
-  subgraph Monolithic_related_Crates[Monolithic-related Crates]
-    axsignal["axsignal"]:::crate
-    axprocess["axprocess"]:::crate
-    axmm["axmm"]:::crate
-  end
-  
-  subgraph OS_Independent_Crates[OS-Independent Crates]
-    elf_parser["elf-parser"]:::lib
-    axptr["axptr"]:::lib
-    weak_map["weak-map"]:::lib
-  end
-
-  classDef root fill:#ffcccc,stroke:#0288d1,color:#333
-  classDef api fill:#ffeb99,stroke:#43a047,color:#333
-  classDef core fill:#ffeb99,stroke:#fb8c00,color:#333
-  classDef backbone fill:#cce5ff,stroke:#8e24aa,color:#333
-  classDef mod fill:#cce5ff,stroke:#333,color:#000
-  classDef crate fill:#e0cce6,stroke:#333,color:#000
-  classDef lib fill:#ccffcc,stroke:#333,color:#000
-
-  Linux_APP -->|POSIX API| Starry_API
-  Starry_API --> Starry_Core
-  Starry_API --> ArceOS_Backbone
-  ArceOS_Backbone --> ArceOS_Modules
-  Starry_Core --> Monolithic_related_Crates
-  Monolithic_related_Crates --> OS_Independent_Crates
-  ArceOS_Modules --> OS_Independent_Crates
-```
+![Starry 结构图](../../static/setup/starry_structure.jpg)
