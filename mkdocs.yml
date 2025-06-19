@@ -85,6 +85,7 @@ nav:
   - 快速上手:
     - setup/index.md
     - 环境配置: setup/env.md
+    - 一个案例快速上手 Starry: setup/case_study.md
     - 运行基本应用: setup/basic.md
     - 运行 OS 比赛测例: setup/oscomp.md
     - Starry 的自定义配置: setup/customization.md
