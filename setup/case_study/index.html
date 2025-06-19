@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../basic/">
+        <link rel="prev" href="../env/">
       
       
-        <link rel="next" href="../customization/">
+        <link rel="next" href="../basic/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>运行 OS 比赛测例 - Starry-Tutorial-Book</title>
+        <title>一个案例快速上手 Starry - Starry-Tutorial-Book</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#os" class="md-skip">
+        <a href="#starry" class="md-skip">
           跳转至
         </a>
       
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              运行 OS 比赛测例
+              一个案例快速上手 Starry
             
           </span>
         </div>
@@ -644,10 +644,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../case_study/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    一个案例快速上手 Starry
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -658,6 +680,71 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#arceos" class="md-nav__link">
+    <span class="md-ellipsis">
+      克隆 ArceOS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      创建应用程序镜像
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      定义配置文件
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#starry_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      启动 Starry 宏内核
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      预期输出
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -690,32 +777,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    运行 OS 比赛测例
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../oscomp/" class="md-nav__link">
         
   
   
@@ -726,203 +791,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#os_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      OS 比赛介绍
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      测试环境准备
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="测试环境准备">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      准备测例镜像
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      准备开发环境
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#os_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      本地运行 OS 比赛测例
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#os_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      在赛事平台上运行 OS 比赛测例
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="在赛事平台上运行 OS 比赛测例">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#os_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      OS 赛事环境介绍
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OS 赛事环境介绍">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测环境
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测用例
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测流程
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      特殊注意点
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starry" class="md-nav__link">
-    <span class="md-ellipsis">
-      Starry 对评测环境的适配
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Starry 对评测环境的适配">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      本地化依赖处理
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      隐藏目录处理
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      安装必要依赖
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      总结
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Docker 模拟赛事评测环境
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2844,9 +2712,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#os_1" class="md-nav__link">
+  <a href="#arceos" class="md-nav__link">
     <span class="md-ellipsis">
-      OS 比赛介绍
+      克隆 ArceOS
     </span>
   </a>
   
@@ -2855,168 +2723,36 @@
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
-      测试环境准备
+      创建应用程序镜像
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="测试环境准备">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      准备测例镜像
+      定义配置文件
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
+  <a href="#starry_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      启动 Starry 宏内核
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
-      准备开发环境
+      预期输出
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#os_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      本地运行 OS 比赛测例
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#os_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      在赛事平台上运行 OS 比赛测例
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="在赛事平台上运行 OS 比赛测例">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#os_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      OS 赛事环境介绍
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="OS 赛事环境介绍">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测环境
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测用例
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      评测流程
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      特殊注意点
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starry" class="md-nav__link">
-    <span class="md-ellipsis">
-      Starry 对评测环境的适配
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Starry 对评测环境的适配">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      本地化依赖处理
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      隐藏目录处理
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      安装必要依赖
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      总结
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Docker 模拟赛事评测环境
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3040,181 +2776,33 @@
   
 
 
-<h1 id="os">运行 OS 比赛测例<a class="headerlink" href="#os" title="Permanent link">&para;</a></h1>
-<h2 id="os_1">OS 比赛介绍<a class="headerlink" href="#os_1" title="Permanent link">&para;</a></h2>
-<p>本章节所提到的比赛是指<a href="https://os.educg.net/#/index?TYPE=MN_KER">全国大学生计算机系统能力大赛内核实现赛</a>，简称 OS 比赛内核实现赛道。该赛道主要考察内核的功能实现，要求内核运行给定的测试用例，并根据通过测例的数量获得相应的分数。</p>
-<h2 id="_1">测试环境准备<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>为了运行比赛测例，我们需要准备开发环境和比赛所用的测例镜像。</p>
-<h3 id="_2">准备测例镜像<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<p>预编译好的测例镜像详见 <a href="https://github.com/Azure-stars/testsuits-for-oskernel/releases/tag/v0.1">testsuit-for-oskernel</a>。其中包括了四种指令架构。当运行时如果没有检测到对应的镜像，会自动进行下载。</p>
-<p>另外也可以使用如下指令，提前将测例镜像下载到本地：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>wget<span class="w"> </span>https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-aarch64.img.gz
-wget<span class="w"> </span>https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-loongarch64.img.gz
-wget<span class="w"> </span>https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-riscv64.img.gz
-wget<span class="w"> </span>https://github.com/Azure-stars/testsuits-for-oskernel/releases/download/v0.1/sdcard-x86_64.img.gz
-
-gunzip<span class="w"> </span>sdcard-aarch64.img.gz
-gunzip<span class="w"> </span>sdcard-loongarch64.img.gz
-gunzip<span class="w"> </span>sdcard-riscv64.img.gz
-gunzip<span class="w"> </span>sdcard-x86_64.img.gz
-</code></pre></div></td></tr></table></div>
-<h3 id="_3">准备开发环境<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>请参考 <a href="../env/"><strong>实验环境配置</strong></a> 完成开发环境的配置。</p>
-<p>另外也可以执行如下指令拉取赛事评测环境镜像并且启动容器（和本地环境二者选其一即可）</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>docker.educg.net/cg/os-contest:20250226
-
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span>-w<span class="w"> </span>/work<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/work<span class="w"> </span>docker.educg.net/cg/os-contest:20250226<span class="w"> </span>bin/bash
-</code></pre></div></td></tr></table></div>
-<h2 id="os_2">本地运行 OS 比赛测例<a class="headerlink" href="#os_2" title="Permanent link">&para;</a></h2>
-<p>在当前的 Starry 主线代码上，执行如下指令：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>./scripts/get_deps.sh
-
-<span class="c1"># 执行 RISC-V 架构的 OS 比赛测例</span>
-make<span class="w"> </span>oscomp_run<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>riscv64
-
-<span class="c1"># 执行 Loongarch64 架构的 OS 比赛测例</span>
-make<span class="w"> </span>oscomp_run<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>loongarch64
-</code></pre></div></td></tr></table></div>
-<p>即可完成 OS 比赛测例的运行。</p>
-<h2 id="os_3">在赛事平台上运行 OS 比赛测例<a class="headerlink" href="#os_3" title="Permanent link">&para;</a></h2>
-<h3 id="os_4">OS 赛事环境介绍<a class="headerlink" href="#os_4" title="Permanent link">&para;</a></h3>
-<p>我们以 2025 年赛事为例介绍初赛的执行环境和评测相关流程。</p>
-<h4 id="_4">评测环境<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
-<p>执行环境由 Docker 构建而成，相关的 dockerfile 可见<a href="https://gitlab.educg.net/wangmingjian/os-contest-2024-image/-/blob/master/Dockerfile">该链接</a>。该文档撰写时所描述的环境对应如下：</p>
-<ul>
-<li>ArceOS：<a href="https://github.com/oscomp/arceos/commit/199d5dfafa3d814dcf06cd4442543ab927c16e5e">commit</a></li>
-<li>Starry-Next：<a href="https://github.com/oscomp/starry-next/commit/45ca70267388dada83092cca2b2ff4e3376fae41">commit</a></li>
-</ul>
-<p>docker 镜像实例为 docker.educg.net/cg/os-contest:20250214。</p>
-<h4 id="_5">评测用例<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
-<p>评测用例源码为：<a href="https://github.com/oscomp/testsuits-for-oskernel/tree/pre-2025">https://github.com/oscomp/testsuits-for-oskernel/tree/pre-2025</a>。按照 README 进行编译之后可以得到 sdcard 文件夹，目录结构如下：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>sdcard
-├──<span class="w"> </span>loongarch
-│<span class="w">   </span>├──<span class="w"> </span>glibc
-│<span class="w">   </span>└──<span class="w"> </span>musl
-└──<span class="w"> </span>riscv
-<span class="w">    </span>├──<span class="w"> </span>glibc
-<span class="w">    </span>└──<span class="w"> </span>musl
-</code></pre></div></td></tr></table></div>
-<p>其中 loongarch64 和 riscv64 会在开始评测之后分别压缩为 sdcard-la.img 和 sdcard-rv.img 拷贝到项目的根目录下，进行评测。压缩指令为：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>sdcard-rv.img<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">128</span><span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1M
-mkfs.ext4<span class="w"> </span>sdcard-rv.img
-mkdir<span class="w"> </span>-p<span class="w"> </span>mnt
-mount<span class="w"> </span>sdcard-rv.img<span class="w"> </span>mnt
-cp<span class="w"> </span>-rL<span class="w"> </span>sdcard/riscv/*<span class="w"> </span>mnt
-umount<span class="w"> </span>mnt
-gzip<span class="w"> </span>sdcard-rv.img
-
-dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>sdcard-la.img<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">128</span><span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1M
-mkfs.ext4<span class="w"> </span>sdcard-la.img
-mkdir<span class="w"> </span>-p<span class="w"> </span>mnt
-mount<span class="w"> </span>sdcard-la.img<span class="w"> </span>mnt
-cp<span class="w"> </span>-rL<span class="w"> </span>sdcard/riscv/*<span class="w"> </span>mnt
-umount<span class="w"> </span>mnt
-gzip<span class="w"> </span>sdcard-la.img
-</code></pre></div></td></tr></table></div>
-<h4 id="_6">评测流程<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
-<p><img alt="avatar" src="../../static/setup/commit.png" />
-当在比赛平台上提交了内核代码所在的仓库 URL 和分支（点击上图的<strong>提交</strong>按钮之后)，平台会执行如下流程开始进行评测：</p>
-<ol>
-<li>
-<p>拉取内核仓库的代码</p>
-</li>
-<li>
-<p>自动在项目根目录中执行<code>make all</code>命令，期望生成 kernel-rv 和 kernel-la 两个文件，分别是内核在 riscv64 架构和 loongarch64 架构下编译生成的可执行文件。</p>
-</li>
-<li>
-<p>评测机会将测例所打包成的镜像（sdcard-rv.img 和 sdcard-la.img）拷贝到根目录下，SD 卡镜像为 ext4 文件系统。在 SD 卡镜像的根目录里包含若干个预先编译好的 ELF 可执行文件（以下简称测试点）。</p>
-</li>
-<li>
-<p>启动 QEMU，开始运行内核并且读取 SD 卡镜像进行测试。运行指令如下：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>qemu-system-riscv64<span class="w"> </span>-machine<span class="w"> </span>virt<span class="w"> </span>-kernel<span class="w"> </span>./kernel-rv<span class="w"> </span>-m<span class="w"> </span>2G<span class="w"> </span>-nographic<span class="w"> </span>-smp<span class="w"> </span><span class="m">2</span><span class="w"> </span>-bios<span class="w"> </span>default<span class="w"> </span>-drive<span class="w"> </span><span class="nv">file</span><span class="o">=</span>sdcard-rv.img,if<span class="o">=</span>none,format<span class="o">=</span>raw,id<span class="o">=</span>x0<span class="w"> </span><span class="se">\</span>
-<span class="w">                    </span>-device<span class="w"> </span>virtio-blk-device,drive<span class="o">=</span>x0,bus<span class="o">=</span>virtio-mmio-bus.0<span class="w"> </span>-no-reboot<span class="w"> </span>-device<span class="w"> </span>virtio-net-device,netdev<span class="o">=</span>net<span class="w"> </span>-netdev<span class="w"> </span>user,id<span class="o">=</span>net<span class="w"> </span><span class="se">\</span>
-<span class="w">                    </span>-rtc<span class="w"> </span><span class="nv">base</span><span class="o">=</span>utc<span class="w"> </span><span class="se">\</span>
-<span class="w">                    </span>-drive<span class="w"> </span><span class="nv">file</span><span class="o">=</span>disk.img,if<span class="o">=</span>none,format<span class="o">=</span>raw,id<span class="o">=</span>x1<span class="w"> </span>-device<span class="w"> </span>virtio-blk-device,drive<span class="o">=</span>x1,bus<span class="o">=</span>virtio-mmio-bus.1
-
-qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-smp<span class="w"> </span><span class="m">1</span><span class="w"> </span>-kernel<span class="w"> </span>./kernel-la<span class="w"> </span>-device<span class="w"> </span>virtio-blk-pci,drive<span class="o">=</span>disk0<span class="w"> </span>-drive<span class="w"> </span><span class="nv">id</span><span class="o">=</span>disk0,if<span class="o">=</span>none,format<span class="o">=</span>raw,file<span class="o">=</span>sdcard-la.img<span class="w"> </span>-no-reboot<span class="w"> </span>-device<span class="w"> </span>virtio-net-pci,netdev<span class="o">=</span>net0<span class="w"> </span>-netdev<span class="w"> </span>user,id<span class="o">=</span>net0<span class="w"> </span>-nographic<span class="w"> </span>-rtc<span class="w"> </span><span class="nv">base</span><span class="o">=</span>utc<span class="w"> </span><span class="se">\</span>
-<span class="w">                        </span>-drive<span class="w"> </span><span class="nv">file</span><span class="o">=</span>disk-la.img,if<span class="o">=</span>none,format<span class="o">=</span>raw,id<span class="o">=</span>x1<span class="w"> </span>-device<span class="w"> </span>virtio-blk-pci,drive<span class="o">=</span>x1
-</code></pre></div></td></tr></table></div>
-</li>
-<li>
-<p>当操作系统执行完所有测试点后，应该主动调用关机命令，评测机会在检测到 QEMU 进程退出后进行打分。</p>
-</li>
-</ol>
-<p>关于作品的评分方式如下：</p>
-<ul>
-<li>操作系统在启动后需要主动扫描SD卡，并依次运行其中每一个测试点，将其运行结果输出到串口上，评测系统会根据您操作系统的串口输出内容进行评分。</li>
-<li>选手可以根据操作系统的完成度自由选择跳过其中若干个测试点，未被运行的测试点将不计分。</li>
-<li>测试点的执行顺序与评分无关，多个测试点只能串行运行，不可同时运行多个测试点。</li>
-<li>具体测试点的数量、内容以及编译方式将在赛题公布时同步发布，2024 年的初赛测例详见<a href="https://github.com/oscomp/testsuits-for-oskernel/tree/pre-2024/riscv-syscalls-testing">这里</a></li>
-</ul>
-<h4 id="_7">特殊注意点<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
-<ul>
-<li>
-<p><strong>除去拉取代测代码之后，应当认为评测机无法访问外部网络</strong>。任何访问外部网络尤其是国外网站的操作很容易导致编译或运行超时而无法完成评测。</p>
-</li>
-<li>
-<p>评测机在构建前会默认无视项目的所有隐藏目录（以 <code>.</code> 开头的文件或目录），若需要使用这部分的配置（如 <code>.cargo</code>）需要自身手动在运行时进行配置（如将<code>.cargo</code>目录下所有内容保存在<code>cargo_temp</code>目录下，并在构建时拷贝<code>cargo_temp</code>到<code>.cargo</code>目录下。</p>
-</li>
-</ul>
-<h3 id="starry">Starry 对评测环境的适配<a class="headerlink" href="#starry" title="Permanent link">&para;</a></h3>
-<p>为了能够在评测环境上对 Starry 进行测试，需要进行相关的适配。适配后的代码详见 <a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/pre2025test">starry-next-gitlab</a>。您可以直接提交这份代码，进行平台评测的体验。</p>
+<h1 id="starry">一个案例快速上手 Starry<a class="headerlink" href="#starry" title="Permanent link">&para;</a></h1>
+<p>在<a href="../env/">环境配置</a>之后，我们通过一个例子来了解启动 Starry 宏内核大概都需要做什么准备工作。</p>
+<h2 id="arceos">克隆 <a href="https://github.com/oscomp/arceos">ArceOS</a><a class="headerlink" href="#arceos" title="Permanent link">&para;</a></h2>
+<p>Starry 宏内核基于 ArceOS 运行，因而需要克隆特定 commit 号的 ArceOS 到  Starry 仓库中，即 <code>./.arceos/</code>。具体细节参考脚本文件 <a href="https://github.com/oscomp/starry-next/blob/main/scripts/get_deps.sh"><code>get_deps.sh</code></a>。执行下面的指令实现克隆 <a href="https://github.com/oscomp/arceos">ArceOS</a>：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>./scripts/get_deps.sh
+</code></pre></div></td></tr></table></div></p>
+<h2 id="_1">创建应用程序镜像<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>在启动 Starry 宏内核之前，我们需要编译应用程序(C/rust)生成对应架构的可执行文件(ELF 文件)，并将他们挂载到 <code>./mnt/</code> 临时文件夹下，生成一个可读、写、执行的镜像文件 <code>disk.img</code>, 最终将该镜像文件移动到 <code>./.arceos/</code> 中，供 ArceOS 文件系统使用。以应用 <code>nimbos</code> 为例，具体可以参考 Starry 的 <a href="https://github.com/oscomp/starry-next/blob/main/Makefile">Makefile</a> 中的 <code>user_apps</code> 指令、应用的 <a href="https://github.com/oscomp/starry-next/blob/main/apps/nimbos/Makefile">Makefile</a> 文件，以及脚本文件 <a href="https://github.com/oscomp/starry-next/blob/main/build_img.sh"><code>build_img.sh</code></a>。 执行下面的指令实现应用程序 <code>nimbos</code> 的镜像创建：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>make<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>riscv64<span class="w"> </span><span class="nv">AX_TESTCASE</span><span class="o">=</span>nimbos<span class="w"> </span>user_apps
+</code></pre></div></td></tr></table></div></p>
+<h2 id="_2">定义配置文件<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>此外我们还需要对应的平台(PLAT_NAME)、指令架构(ARCH)、是否启用对称多处理器架构(SMP) 来生成相应的配置文件。 具体可以参考 <a href="https://github.com/oscomp/arceos/blob/main/scripts/make/config.mk"><code>config.mk</code></a>，执行下面的指令，能够生成配置文件 <code>./axconfig.toml</code>，(由于没有指定平台，则使用默认的 <code>QEMU</code> 平台):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>make<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>riscv64<span class="w"> </span>defconfig
+</code></pre></div></td></tr></table></div></p>
 <div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>请注意：这份代码仅是 demo，因此仅测试了最简单的几个测例，并不与 Starry 的主线保持一致。</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>接下来是对适配原理的介绍，如果同学们对它感兴趣，可以继续阅读。这有助于大家将自己的内核适配到评测环境上。否则可以跳过本章节剩下的所有内容。</strong></p>
-</div>
-<p>相关适配工作如下：</p>
-<h4 id="_8">本地化依赖处理<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
-<p>我们默认评测机无法访问外部网络，因此需要保证整个内核构建过程需要完全脱离网络进行。为此我们需要进行如下配置：</p>
+<p class="admonition-title">QEMU (Quick EMUlator)</p>
+<p>QEMU 是一个非常强大的、开源的通用虚拟化和硬件仿真工具。在本项目中，它被用来实现硬件仿真：</p>
 <ul>
-<li>
-<p>cargo 依赖本地化：通过执行 <code>cargo vendor</code> 基于当前的 <code>Cargo.lock</code> 文件预先将所有需要的依赖文件下载到本地的 <a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/main/vendor">vendor</a> 文件夹下。当指令执行完成之后，会在终端输出一系列 patch 信息，如下。</p>
+<li>可以完全模拟一整台机器，包括 CPU、内存、磁盘、网卡、串口等。</li>
+<li>支持多架构（x86、ARM、RISC-V、LoongArch 等），可以在 x86 机器上模拟 RISC-V 硬件。</li>
+</ul>
+</div>
+<h2 id="starry_1">启动 Starry 宏内核<a class="headerlink" href="#starry_1" title="Permanent link">&para;</a></h2>
+<p>至此，我们已经做好了启动 Starry 宏内核的准备，接着我们要把整个工作空间进行构建，具体可以参考<a href="https://github.com/oscomp/arceos/blob/main/scripts/make/cargo.mk">cargo.mk</a>中的 <code>cargo_build</code> 指令。在本例中构建完成后会生成一个可执行文件 <code>starry-next_riscv64-qemu-virt.elf</code>。通过 <code>rust-objcopy</code> 指令将这个 ELF 文件转化为转换成裸二进制镜像（BIN 文件）。 最终启用 QEMU 来调用这个二进制镜像，在模拟器中启动 Starry 宏内核。 以上的过程只需要通过执行下面的指令便可启动（具体细节请参考 ArceOS 的 <a href="https://github.com/oscomp/arceos/blob/main/Makefile">Makefile</a>）：
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>make<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>riscv64<span class="w"> </span><span class="nv">AX_TESTCASE</span><span class="o">=</span>nimbos<span class="w"> </span><span class="nv">BLK</span><span class="o">=</span>y<span class="w"> </span><span class="nv">NET</span><span class="o">=</span>y<span class="w"> </span><span class="nv">ACCEL</span><span class="o">=</span>n<span class="w"> </span>run
+</code></pre></div></td></tr></table></div></p>
+<h2 id="_3">预期输出<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -3236,183 +2824,29 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[source.crates-io]</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code>       d8888                            .d88888b.   .d8888b.
+      d88888                           d88P&quot; &quot;Y88b d88P  Y88b
+     d88P888                           888     888 Y88b.
+    d88P 888 888d888  .d8888b  .d88b.  888     888  &quot;Y888b.
+   d88P  888 888P&quot;   d88P&quot;    d8P  Y8b 888     888     &quot;Y88b.
+  d88P   888 888     888      88888888 888     888       &quot;888
+ d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+d88P     888 888      &quot;Y8888P  &quot;Y8888   &quot;Y88888P&quot;   &quot;Y8888P&quot;
 
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/Azure-stars/lwext4_rust.git&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/Azure-stars/lwext4_rust.git&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/arceos-org/allocator.git?tag=v0.1.1&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/arceos-org/allocator.git&quot;</span>
-<span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;v0.1.1&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/arceos-org/axdriver_crates.git?tag=v0.1.0&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/arceos-org/axdriver_crates.git&quot;</span>
-<span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;v0.1.0&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/arceos-org/linked_list.git?tag=v0.1.0&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/arceos-org/linked_list.git&quot;</span>
-<span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;v0.1.0&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/arceos-org/scheduler.git?tag=v0.1.0&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/arceos-org/scheduler.git&quot;</span>
-<span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;v0.1.0&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/jasonwhite/syscalls.git?rev=92624de&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/jasonwhite/syscalls.git&quot;</span>
-<span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;92624de&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/rafalh/rust-fatfs?rev=85f06e0&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/rafalh/rust-fatfs&quot;</span>
-<span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;85f06e0&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/rcore-os/smoltcp.git?rev=2ade274&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/rcore-os/smoltcp.git&quot;</span>
-<span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2ade274&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.</span><span class="s2">&quot;git+https://github.com/yfblock/page_table_multiarch.git?rev=c8a13b0&quot;</span><span class="k">]</span>
-<span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/yfblock/page_table_multiarch.git&quot;</span>
-<span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;c8a13b0&quot;</span>
-<span class="n">replace-with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendored-sources&quot;</span>
-
-<span class="k">[source.vendored-sources]</span>
-<span class="n">directory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;vendor&quot;</span>
+Hello world from user mode program!
+Hello, world!
+Hello, I am process 6.
+Back in process 6, iteration 0.
+Back in process 6, iteration 1.
+Back in process 6, iteration 2.
+Back in process 6, iteration 3.
+Back in process 6, iteration 4.
+yield passed!
+into sleep test!
+current time_usec = -38
+time_msec = -38 after sleeping 1 seconds, delta = -1000000us!
+simple_sleep passed!
 </code></pre></div></td></tr></table></div>
-<p>我们需要将这部分的 patch 信息添加到 <code>.cargo/config.toml</code>中，用于指示 cargo 在构建时利用本地 vendor 文件夹进行构建，而不再需要通过 cargo cache 或云端下载。相关文档详见<a href="https://doc.rust-lang.org/cargo/reference/source-replacement.html#configuration">Configuration</a>。</p>
-</li>
-<li>
-<p>使用评测环境指定的工具链：</p>
-<p>我们需要指定构建工具链为评测镜像中提供的工具链，从而避免下载新的工具链导致的构建超时问题。  目前镜像中的工具链为 <code>nightly-2024-02-03</code>与<code>nightly-2025-01-18</code>两类，分别需要 rust edition 2021 和 rust editon 2024。截止该文档撰写时，Starry 尚未迁移到 rust edition 2024，因此先适配 <code>nightly-2024-02-03</code>工具链版本。之后我们会将 Starry 迁移到 edition 2024。 rustup 在构建时若未显式指定当前的 toolchain，会自动尝试去同步最新的工具链，出现如下输出，从而导致构建超时。</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>info:<span class="w"> </span>syncing<span class="w"> </span>channel<span class="w"> </span>updates<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s1">&#39;nightly-2024-02-03-x86_64-unknown-linux-gnu&#39;</span><span class="w">   </span>
-</code></pre></div></td></tr></table></div>
-<p>为了解决工具链问题，我们需要手动指定工具链，相关文档详见 <a href="https://rust-lang.github.io/rustup/overrides.html">Override</a>。我们选择手动指定 <code>RUSTUP_TOOLCHAIN</code> 环境变量。因此我们在 Makefile 做了如下设置：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">all</span><span class="o">:</span>
-<span class="w">    </span><span class="nv">RUSTUP_TOOLCHAIN</span><span class="o">=</span>nightly-2025-01-18<span class="w"> </span><span class="k">$(</span>MAKE<span class="k">)</span><span class="w"> </span>test_build<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>riscv64<span class="w"> </span><span class="nv">AX_TESTCASE</span><span class="o">=</span>oscomp<span class="w"> </span><span class="nv">BUS</span><span class="o">=</span>mmio<span class="w">  </span><span class="nv">FEATURES</span><span class="o">=</span>lwext4_rs<span class="w"> </span>
-<span class="w">    </span><span class="nv">RUSTUP_TOOLCHAIN</span><span class="o">=</span>nightly-2025-01-18<span class="w"> </span><span class="k">$(</span>MAKE<span class="k">)</span><span class="w"> </span>test_build<span class="w"> </span><span class="nv">ARCH</span><span class="o">=</span>loongarch64<span class="w"> </span><span class="nv">AX_TESTCASE</span><span class="o">=</span>oscomp<span class="w"> </span><span class="nv">FEATURES</span><span class="o">=</span>lwext4_rs
-</code></pre></div></td></tr></table></div>
-</li>
-</ul>
-<h4 id="_9">隐藏目录处理<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
-<p>隐藏目录的处理在 starry-next 中包括两个部分：<code>.cargo</code>与<code>.arceos</code>处理</p>
-<ul>
-<li>
-<p><code>.cargo</code>处理：在 starry-next 中需要指定依赖的 patch 信息（包括 arceos 基座和 vendor 信息），这些需要配置在 <code>.cargo/config.toml</code>中。在 starry-next 中，我们通过如下方式构造<code>.cargo/config.toml</code></p>
-<ul>
-<li>在<code>./scripts/config.toml.temp</code>中书写 <code>config.toml</code>所需要的内容</li>
-<li>执行<code>./scripts/set_ax_root.sh</code>创建<code>.cargo</code>目录并写入<code>config.toml</code></li>
-</ul>
-<p>因此我们提交的内容本就不包括<code>.cargo</code>文件夹，无需额外处理，只需要维护好<code>config.toml.temp</code>即可。</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>在<a href="#_8">本地化依赖处理</a> 中要求将 vendor 信息加入到 <code>config.toml</code>，在 Starry 中应当是加入到 <code>./scripts/config.toml.temp</code>中，详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/config.toml.temp#L12">config.toml.temp</a>。</p>
-</div>
-</li>
-<li>
-<p><code>.arceos</code>处理：Starry 并不是一个完整的内核，而是一个<strong>内核插件</strong>，需要在构建时拉取 arceos 仓库作为内核基座，完成整个系统的构建。由于我们默认评测机无法访问外部网络，且无法识别隐藏文件，因此需要做出如下适配。</p>
-<ol>
-<li>
-<p>直接将 arceos 的相关代码拉取到项目文件夹中，作为项目的一部分进行提交，而不再是通过 <code>.scripts/get_deps.sh</code>进行拉取。相关代码详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/tree/main/arceos">arceos</a>。</p>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>在将来可以为这一步写一个自动化脚本，每次提交时自动同步对应的 arceos 代码到根目录下</p>
-</div>
-</li>
-<li>
-<p>原来默认的内核基座目录是 <code>.arceos</code>，需要改为非隐藏目录，因此需要对项目构建时的 <code>AX_ROOT</code> 变量进行修改，从 <code>.arceos</code>修改为<code>arceos</code>，相关修改详见<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/86ad0fa17b0edd9fd5bba082a58d666a100b7897/Makefile">Makefile</a>和<a href="https://gitlab.eduxiji.net/Azure_stars/starry-next/-/blob/main/scripts/get_deps.sh#L3">get_deps.sh</a>。</p>
-</li>
-</ol>
-</li>
-</ul>
-<h4 id="_10">安装必要依赖<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
-<p>ArceOS 构造过程需要<code>axconfig-gen</code>依赖，该包需要由<code>cargo install</code> 下载，我们需要将其下载到本地。在赛事使用的 docker 中需要将 <code>axconfig-gen</code> 的可执行文件拷贝到环境变量中，因此有如下操作。</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 在本地项目根目录下安装该依赖</span>
-cargo<span class="w"> </span>install<span class="w"> </span>--root<span class="w"> </span>.<span class="w"> </span>axconfig-gen
-
-<span class="c1"># 下载完毕之后，会在根目录下生成 bin/axconfig-gen</span>
-
-<span class="c1"># 在 赛事 docker 中需要将可执行文件加入到环境变量，详见 Makefile 的 test_build 目标</span>
-cp<span class="w"> </span>bin/*<span class="w"> </span><span class="si">${</span><span class="nv">CARGO_BIN_PATH</span><span class="si">}</span>
-</code></pre></div></td></tr></table></div>
-<h4 id="_11">总结<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
-<p>为了适配评测环境，需要做出如下改动：</p>
-<ol>
-<li>cargo vendor 并添加 patch 信息到 <code>config.toml.temp</code>（注意不是<code>.cargo/config.toml</code>，相关原因见<a href="#_9">隐藏目录</a></li>
-<li>用环境变量<code>RUSTUP_TOOLCHAIN</code>显式指定评测所需的工具链</li>
-<li>将 arceos 代码直接作为项目下文件夹一并提交，而不再是远程下载</li>
-<li>修改 <code>AX_ROOT</code> 变量为 <code>arceos</code></li>
-<li>安装依赖并拷贝到环境变量中</li>
-</ol>
-<h3 id="docker">Docker 模拟赛事评测环境<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
-<p>我们可以使用 Docker 来模拟赛事的评测环境，从而在本地判断环境配置是否有问题。</p>
-<p>在项目仓库目录下执行如下指令：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>docker.educg.net/cg/os-contest:20250226
-
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span>-w<span class="w"> </span>/work<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/work<span class="w"> </span>docker.educg.net/cg/os-contest:20250226<span class="w"> </span>bin/bash
-
-<span class="c1"># 在 docker 中</span>
-make<span class="w"> </span>all
-</code></pre></div></td></tr></table></div>
-<p>执行完上述指令之后，会在项目根目录下生成 kernel-la 和 kernel-rv 两个文件。接下来在 docker 分别执行如下两个指令</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>qemu-system-riscv64<span class="w"> </span>-machine<span class="w"> </span>virt<span class="w"> </span>-kernel<span class="w"> </span>./kernel-rv<span class="w"> </span>-m<span class="w"> </span>2G<span class="w"> </span>-nographic<span class="w"> </span>-smp<span class="w"> </span><span class="m">2</span><span class="w"> </span>-bios<span class="w"> </span>default<span class="w"> </span>-drive<span class="w"> </span><span class="nv">file</span><span class="o">=</span>sdcard-rv.img,if<span class="o">=</span>none,format<span class="o">=</span>raw,id<span class="o">=</span>x0<span class="w"> </span><span class="se">\</span>
-<span class="w">                    </span>-device<span class="w"> </span>virtio-blk-device,drive<span class="o">=</span>x0,bus<span class="o">=</span>virtio-mmio-bus.0<span class="w"> </span>-no-reboot<span class="w"> </span>-device<span class="w"> </span>virtio-net-device,netdev<span class="o">=</span>net<span class="w"> </span>-netdev<span class="w"> </span>user,id<span class="o">=</span>net<span class="w"> </span><span class="se">\</span>
-<span class="w">                    </span>-rtc<span class="w"> </span><span class="nv">base</span><span class="o">=</span>utc
-
-qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-smp<span class="w"> </span><span class="m">1</span><span class="w"> </span>-kernel<span class="w"> </span>./kernel-la<span class="w"> </span>-device<span class="w"> </span>virtio-blk-pci,drive<span class="o">=</span>disk0<span class="w"> </span>-drive<span class="w"> </span><span class="nv">id</span><span class="o">=</span>disk0,if<span class="o">=</span>none,format<span class="o">=</span>raw,file<span class="o">=</span>sdcard-la.img<span class="w"> </span>-no-reboot<span class="w"> </span>-device<span class="w"> </span>virtio-net-pci,netdev<span class="o">=</span>net0<span class="w"> </span>-netdev<span class="w"> </span>user,id<span class="o">=</span>net0,hostfwd<span class="o">=</span>tcp::5555-:5555,hostfwd<span class="o">=</span>udp::5555-:5555<span class="w"> </span>-nographic<span class="w"> </span>
-</code></pre></div></td></tr></table></div>
-<p>即可在 Docker 中运行赛事测例。</p>
-<p>当完成了上述测试，即可将本地代码提交到仓库，并按照上述流程在赛事平台上测试。</p>
 
 
 
@@ -3433,7 +2867,7 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 12:37:51 UTC">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年6月19日 15:06:41 UTC">2025年6月19日</span>
   </span>
 
     
@@ -3449,7 +2883,7 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
     </span>
     <nav>
       
-        <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
+        <a href="mailto:dut_wr@outlook.com">Ryan Wang</a>
     </nav>
   </span>
 
@@ -3501,7 +2935,7 @@ qemu-system-loongarch64<span class="w"> </span>-m<span class="w"> </span>1G<span
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:dut_wr@outlook.com'>Ryan Wang</a></span>
             </small>
         </div>
     
