@@ -6,7 +6,28 @@
 2. **文件系统兼容层**：提供了一个统一的对象 `dyn VfsNodeOps` 供上层调用，下层的具体的文件系统只需要实现 `VfsOps` 和 `VfsNodeOps` trait 即可接入 ArceOS 的文件系统框架中
 3. **用户接口层**：最终提供给用户的文件系统 API
 
-![结构图](../../static/arceos-modules/fs/文件系统结构图.png)
+## 模块组织
+```txt
+axfs
+├── Cargo.toml  - Cargo 配置文件
+├── resources
+│   ├── create_test_img.sh  - 创建测试用的磁盘镜像脚本
+└── src
+    ├── api         - std-like API
+    │   ├── dir.rs  - 目录相关的文件系统操作
+    │   ├── file.rs - 文件相关的文件系统操作
+    │   └── mod.rs  
+    ├── dev.rs  - 文件系统设备定义
+    ├── fops.rs - 文件/目录结构体以及操作
+    ├── fs
+    │   ├── fatfs.rs        - FAT 文件系统的实现
+    │   ├── lwext4_rust.rs  - Rust 实现的 Ext4 文件系统
+    │   └── myfs.rs         - 自定义的文件系统实现接口
+    │   ├── mod.rs
+    ├── lib.rs      - 模块入口
+    ├── mounts.rs   - 文件系统挂载目标
+    └── root.rs     - 根目录的文件系统操作
+```
 
 ## 文件系统兼容层
 
@@ -132,19 +153,18 @@ pub trait VfsOps: Send + Sync {
 4. `entry_idx`：表示目录的读写位置。
 
 ```rust
-/// A wrapper of [`Arc<dyn VfsNodeOps>`].
+/// 一个对 [`Arc<dyn VfsNodeOps>`] 的包装。
 pub type VfsNodeRef = Arc<dyn VfsNodeOps>;
 
 
-/// An opened file object, with open permissions and a cursor.
+/// 文件结构体：包含打开的权限和一个游标。
 pub struct File {
     node: WithCap<VfsNodeRef>,
     is_append: bool,
     offset: u64,
 }
 
-/// An opened directory object, with open permissions and a cursor for
-/// [`read_dir`](Directory::read_dir).
+/// 目录结构体：包含打开的权限和一个游标，用于读取目录内容。
 pub struct Directory {
     node: WithCap<VfsNodeRef>,
     entry_idx: usize,
@@ -158,11 +178,11 @@ pub struct Directory {
 
 ArceOS 目前已经可以使用`ramfs`、`devfs`、`fatfs`和 `ext4` 文件系统了，前两个是虚拟文件系统，是基于内存和设备的文件系统，后两个是基于磁盘的文件系统。
 
-现在以 `fatfs` 为例，介绍如何接入一个新的文件系统，其中 `fatfs` 的具体实现请参考 [rust-fatfs](https://github.com/rafalh/rust-fatfs) 。当然，由于代码量较大，这里只介绍如何接入文件系统的核心部分，具体的实现请参考 `arceos/modules/fs/fatfs.rs`。
+现在以 `fatfs` 为例，介绍如何向 ArceOS 中接入一个新的文件系统，其中 `fatfs` 的具体实现使用了 [rust-fatfs](https://github.com/rafalh/rust-fatfs)。当然，由于代码量较大，这里只会讲解**如何接入文件系统**的核心部分，具体的实现请参考 `arceos/modules/fs/fatfs.rs`。
 
 ### 封装原始数据结构
 
-当前 `trait` 和 `fatfs` 的结构体都不在当前模块中，因此不可能直接进行 `impl`，同时由于我们需要添加 `Mutex` 来实现多线程安全，所以我们必须要对 `fatfs` 的数据结构进行一层封装。
+当前 `trait` 和 `fatfs` 的结构体都不在当前模块中，因此不可能对 `rust-fatfs` 的原始结构体直接进行 `impl`，同时由于我们需要添加 `Mutex` 来实现多线程安全，所以我们必须要对 `fatfs` 的数据结构先进行一层封装。
 ```rust
 pub struct FatFileSystem {
     inner: fatfs::FileSystem<Disk, NullTimeProvider, LossyOemCpConverter>,
@@ -181,7 +201,7 @@ pub trait IoTrait: Read + Write + Seek {}
 
 这里给出 `FileWrapper` 的实现，`DirWrapper` 的实现也是类似的，同时这里还需要注意以下两点：
 
-首先，第二行 `axfs_vfs::impl_vfs_non_dir_default! {}` 提供了非目录节点的默认实现，主要是 `lookup`、`create`、`remove` 和 `read_dir` 的实现。
+首先，第二行 `axfs_vfs::impl_vfs_non_dir_default! {}` 提供了非目录节点的默认的实现，主要是 `lookup`、`create`、`remove` 和 `read_dir` 的实现。
 
 其次，`fatfs` 中不支持权限控制，所以我们直接将权限设置为 `0o755`，即 `rwxr-xr-x`。
 
@@ -219,7 +239,7 @@ impl<IO: IoTrait> VfsNodeOps for FileWrapper<'static, IO> {
 
 ### 定义文件系统操作对象
 
-在 `fatfs` 的定义中，需要一个实现 `Read`、`Write` 和 `Seek` trait 的结构体来给 `fatfs` 进行操作，这里我们使用 `Disk` 设备来作为被操作的对象。
+在 `fatfs` 的定义中，需要一个实现了 `Read`、`Write` 和 `Seek` trait 的结构体来给 `fatfs` 进行读写等操作，这里我们使用 `Disk` 设备来作为被操作的对象。
 
 下面是 `Disk` 对 `Read`、`Write` 和 `Seek` trait 的实现：
 
@@ -312,4 +332,117 @@ cfg_if::cfg_if! {
 }
 
 let root_dir = RootDirectory::new(main_fs);
+```
+
+
+## 启动与初始化
+
+ArceOS 中的文件系统模块 `axfs` 将在内核启动时进行初始化，执行流如下：
+
+### 初始化设备
+
+`axruntime` 承担着整个操作系统启动过程中的基础初始化工作，确保内核运行环境就绪。
+
+`axruntime` 会在启动时调用 `axdriver` 模块，初始化所有的设备驱动程序。当启动 `fs` 特性时，会将块设备传递给 `axfs` 模块初始化入口中。
+
+```rust
+/// modules/axruntime/src/lib.rs
+#[cfg_attr(not(test), unsafe(no_mangle))]
+pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
+    // ...
+    #[cfg(any(feature = "fs", feature = "net", feature = "display"))]
+    {
+        #[allow(unused_variables)]
+        let all_devices = axdriver::init_drivers();
+
+        #[cfg(feature = "fs")]
+        axfs::init_filesystems(all_devices.block);
+
+        #[cfg(feature = "net")]
+        axnet::init_network(all_devices.net);
+
+        #[cfg(feature = "display")]
+        axdisplay::init_display(all_devices.display);
+    }
+    // ...
+}
+```
+
+### 初始化文件系统
+
+`axfs` 获取到第一个块设备的所有权后，调用 `init_rootfs` 函数对根目录进行初始化。
+
+```rust
+/// modules/axfs/src/lib.rs
+pub fn init_filesystems(mut blk_devs: AxDeviceContainer<AxBlockDevice>) {
+    info!("Initialize filesystems...");
+
+    let dev = blk_devs.take_one().expect("No block device found!");
+    info!("  use block device 0: {:?}", dev.device_name());
+    self::root::init_rootfs(self::dev::Disk::new(dev));
+}
+```
+
+### 挂载根目录文件系统
+
+根据 `Cargo.toml` 中的 `features` 配置，选择具体的文件系统类型作为根文件系统。默认情况下，根文件系统选择的优先级顺序依次为 `myfs`、`lwext4_rs`、`fatfs`。如果没有选择任何一个文件系统的 `feature`，则会导致编译错误。
+
+```rust
+pub(crate) fn init_rootfs(disk: crate::dev::Disk) {
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "myfs")] { // override the default filesystem
+            let main_fs = fs::myfs::new_myfs(disk);
+        } else if #[cfg(feature = "lwext4_rs")] {
+            static EXT4_FS: LazyInit<Arc<fs::lwext4_rust::Ext4FileSystem>> = LazyInit::new();
+            EXT4_FS.init_once(Arc::new(fs::lwext4_rust::Ext4FileSystem::new(disk)));
+            let main_fs = EXT4_FS.clone();
+        } else if #[cfg(feature = "fatfs")] {
+            static FAT_FS: LazyInit<Arc<fs::fatfs::FatFileSystem>> = LazyInit::new();
+            FAT_FS.init_once(Arc::new(fs::fatfs::FatFileSystem::new(disk)));
+            FAT_FS.init();
+            let main_fs = FAT_FS.clone();
+        }
+    }
+
+    let root_dir = RootDirectory::new(main_fs);
+    // ...
+}
+```
+
+### 挂载特殊的文件系统
+
+为了保证与 linux 系统的兼容性，还需要基于 `features` 的配置，挂载一些特殊的文件系统 `devfs`、`procfs`、`tmp` 和 `sysfs`。
+
+```rust
+#[cfg(feature = "devfs")]
+root_dir
+    .mount("/dev", mounts::devfs())
+    .expect("failed to mount devfs at /dev");
+
+#[cfg(feature = "ramfs")]
+root_dir
+    .mount("/tmp", mounts::ramfs())
+    .expect("failed to mount ramfs at /tmp");
+
+// Mount another ramfs as procfs
+#[cfg(feature = "procfs")]
+root_dir // should not fail
+    .mount("/proc", mounts::procfs().unwrap())
+    .expect("fail to mount procfs at /proc");
+
+// Mount another ramfs as sysfs
+#[cfg(feature = "sysfs")]
+root_dir // should not fail
+    .mount("/sys", mounts::sysfs().unwrap())
+    .expect("fail to mount sysfs at /sys");
+```
+
+### 注册目录节点
+
+最后，将根目录、当前目录的 `VfsNodeRef` 注册到 `axfs` 的全局变量中，供其他模块使用。
+
+```rust
+ROOT_DIR.init_once(Arc::new(root_dir));
+CURRENT_DIR.init_new(Mutex::new(ROOT_DIR.clone()));
+CURRENT_DIR_PATH.init_new(Mutex::new("/".into()));
 ```
