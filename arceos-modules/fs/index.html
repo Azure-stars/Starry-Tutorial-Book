@@ -2601,6 +2601,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      TODO
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2620,6 +2637,29 @@
 
 
 <h1 id="arceos">ArceOS 文件系统<a class="headerlink" href="#arceos" title="Permanent link">&para;</a></h1>
+<p><code>axfs</code> 模块负责接入不同来源的文件系统，并为用户提供统一的文件系统功能的调用接口，使得其他的模块在操作<strong>文件\目录</strong>时无需关心具体的文件系统细节，同时也为下层具体的文件系统接入 ArceOS 中提供了统一的接口。ArceOS 文件系统分层结构图如下所示：</p>
+<center>
+    <img src="/../../static/arceos-modules/fs/文件系统结构图.png" height="80%" width="80%">
+</center>
+
+<p>本模块的是基于虚拟文件系统 <a href="https://github.com/arceos-org/axfs_crates/tree/main/axfs_vfs">axfs_vfs</a> 元件实现的，这是 ArceOS 整个文件系统管理的核心抽象层，负责屏蔽不同文件系统之间的差异。</p>
+<p>在这层抽象层之上，<code>axfs</code> 对其进行了封装，为用户提供了统一的文件系统功能调用接口，如文件读写、目录操作等。</p>
+<p>具体来说，本文件系统章节将会介绍如下内容：</p>
+<ol>
+<li>ArceOS 文件系统兼容层的具体实现</li>
+<li><code>axfs</code> 模块的启动与初始化</li>
+<li>如何向 ArceOS 中接入新的文件系统</li>
+<li>关键结构体字段与 API 以及基本示例代码</li>
+<li><code>axfs</code> 模块 <code>Features</code> 的配置策略</li>
+</ol>
+<h2 id="todo">TODO<a class="headerlink" href="#todo" title="Permanent link">&para;</a></h2>
+<p>最后，目前 ArceOS 的文件系统模块还处于开发阶段，部分功能还没有实现，欢迎大家提出 PR！</p>
+<ul>
+<li>改进对 <code>devfs/shmfs/procfs</code> 等特殊文件系统支持，对支持 libc 的一些功能有重要作用 </li>
+<li>支持文件/目录的<strong>软\硬链接</strong>功能</li>
+<li>支持获取文件系统信息</li>
+<li>支持文件/目录的<strong>时间戳</strong>功能</li>
+</ul>
 
 
 
@@ -2640,7 +2680,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年3月22日 12:56:41 UTC">2025年3月22日</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2025年6月5日 14:43:18 UTC">2025年6月5日</span>
   </span>
 
     
@@ -2651,11 +2691,12 @@
   <span class="md-source-file__fact">
     <span class="md-icon" title="贡献者">
       
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M5 8c.56 0 1.08.15 1.53.42-.15 1.43.27 2.85 1.13 3.96C7.16 13.34 6.16 14 5 14a3 3 0 0 1-3-3 3 3 0 0 1 3-3m14 0a3 3 0 0 1 3 3 3 3 0 0 1-3 3c-1.16 0-2.16-.66-2.66-1.62a5.54 5.54 0 0 0 1.13-3.96c.45-.27.97-.42 1.53-.42M5.5 18.25c0-2.07 2.91-3.75 6.5-3.75s6.5 1.68 6.5 3.75V20h-13zM0 20v-1.5c0-1.39 1.89-2.56 4.45-2.9-.59.68-.95 1.62-.95 2.65V20zm24 0h-3.5v-1.75c0-1.03-.36-1.97-.95-2.65 2.56.34 4.45 1.51 4.45 2.9z"/></svg>
       
     </span>
     <nav>
       
+        <a href="mailto:lillluckenwp590@gmail.com">LinkWanna</a>, 
         <a href="mailto:zyj578335934@gmail.com">Youjie Zheng</a>
     </nav>
   </span>
@@ -2708,7 +2749,7 @@
     
         <div class="md-source-date">
             <small>
-                作者: <span class='git-page-authors git-authors'><a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a></span>
+                作者: <span class='git-page-authors git-authors'><a href='mailto:lillluckenwp590@gmail.com'>LinkWanna</a> (96.43%), <a href='mailto:zyj578335934@gmail.com'>Youjie Zheng</a> (3.57%)</span>
             </small>
         </div>
     
